@@ -26,7 +26,7 @@ df = df.head(10000)
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 
-valid_vectors = []  # To store valid sentence vectors
+valid_vectors = []  # To store valid sentence vectorst
 publication_colors = {}  # To store colors for each publication
 
 for index, row in df.iterrows():
