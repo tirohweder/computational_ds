@@ -1,1 +1,4 @@
-filepaths.py
+*.pyc
+*.log
+*.DS_Store
+filepaths.py 
