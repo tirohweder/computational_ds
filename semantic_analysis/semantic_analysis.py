@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 from tensorflow.keras import layers
-import bert
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from scipy.special import softmax
+import torch
+#import bert
 #!pip install bert-for-tf2
 #!pip install sentencepiece
 #try:
@@ -31,11 +32,11 @@ def roberta_semantic_algorithm(scrapped_data):
 
     for txt in txt_articles: 
 
-        encoded_txt = tokenizer(txt, return_tensors='pt')
-        output = model(**encoded_tweet)
+        encoded_txt = tokenizer(txt, return_tensors='pt', max_length=512)
+        output = model(**encoded_txt)
 
-        score = output[0][0].detach().numpy()
-        score = softmax(scores)
+        scores = output[0][0].detach().numpy()
+        scores = softmax(scores)
 
         semantic_scores = []
         for i in range(len(scores)):
@@ -44,7 +45,8 @@ def roberta_semantic_algorithm(scrapped_data):
             s = scores[i]
             semantic_scores.append(s)
 
-        semantic = np.where(np.array(semantic_scores), max(semantic_scores))
+        semantic_scores = np.array(semantic_scores)
+        semantic = np.argmax(semantic_scores)
         semantic_articles.append(semantic)
 
     return semantic_articles
