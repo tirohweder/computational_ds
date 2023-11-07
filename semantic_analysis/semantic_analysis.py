@@ -1,6 +1,10 @@
 import numpy as np
 import pandas as pd
 from tensorflow.keras import layers
+<<<<<<< HEAD
+=======
+
+>>>>>>> f924fab4fa391fb5892002373ec9da1be6a6de2c
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from scipy.special import softmax
 import torch
@@ -44,7 +48,10 @@ def roberta_semantic_algorithm(scrapped_data):
             l = labels[i]
             s = scores[i]
             semantic_scores.append(s)
+<<<<<<< HEAD
 
+=======
+>>>>>>> f924fab4fa391fb5892002373ec9da1be6a6de2c
         semantic_scores = np.array(semantic_scores)
         semantic = np.argmax(semantic_scores)
         semantic_articles.append(semantic)
