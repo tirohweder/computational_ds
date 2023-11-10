@@ -4,9 +4,11 @@ from bs4 import BeautifulSoup
 import os
 
 # Load the CSV file
-df = pd.read_csv('../../data/source/fox_2018.csv', header=None)
+df = pd.read_csv('../../data/source/selected_fox_2018.csv', header=None)
 
-urls = df[2].tolist()
+selected_df = df[df.iloc[:, -1] == 1]
+
+urls = selected_df[2].tolist()
 urls = urls[1:]
 
 # Set the batch size
@@ -16,7 +18,7 @@ start_index = 0
 
 count = 0 
 
-output_file = 'output_fox_2018.csv'
+output_file = 'output_fox_selected_2018.csv'
 
 while start_index < total_links:
     end_index = min(start_index + batch_size, total_links)
