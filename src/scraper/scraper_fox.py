@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import os
 
 # Load the CSV file
-df = pd.read_csv('../../data/source/selected_fox_2014.csv', header=None)
+df = pd.read_csv('../../data/source/fox_2014.csv', header=None)
 print(df)
 #subsel
 filtered_df = df[df[3] == "1"]

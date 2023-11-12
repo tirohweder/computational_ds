@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-directory = os.path.join(os.path.dirname(__file__), '..', 'data', 'output')
+directory = os.path.join(os.path.dirname(__file__), '../..', 'data', 'output')
 print(directory)
 
 def create_date():

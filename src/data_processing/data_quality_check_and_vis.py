@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 # Define the directory where the files are stored
-directory = r'../../data/output'
+directory = os.path.join(os.path.dirname(__file__), '../..', 'data', 'output')
 
 
 
@@ -46,7 +46,7 @@ def overview_source():
 def check_data_quality():
     report_dict = {}
     error_rows_data = []
-    directory=r'C:\Users\rohwe\OneDrive\DTU\Semester 1\Computational Tools for Data Science\computational_ds\data\output'
+
 
     # Iterate over all files in the given directory
     for filename in os.listdir(directory):
@@ -93,8 +93,8 @@ def check_data_quality():
 
 def compare_links():
     # Dictionary to hold the missing links report
-    data_source_dir = r'../../data/source'
-    data_output_dir = r'../../data/output'
+    data_source_dir = os.path.join(os.path.dirname(__file__), '../..', 'data', 'source')
+    data_output_dir = os.path.join(os.path.dirname(__file__), '../..', 'data', 'output')
 
     missing_links_report = {}
 
