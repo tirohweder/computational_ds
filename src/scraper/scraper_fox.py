@@ -6,7 +6,7 @@ import os
 # Load the CSV file
 df = pd.read_csv('C:/Users/storr/OneDrive - Danmarks Tekniske Universitet/Year 1/Semester 1/Computational Tools for Data Science/Project/DATA/FOX/fox_2016.csv', header=None)
 
-urls = df[2].tolist()
+urls = filtered_df[2].tolist()
 urls = urls[1:]
 
 # Set the batch size
