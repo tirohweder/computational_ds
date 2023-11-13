@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import os
 
 # Load the CSV file
-df = pd.read_csv('../../data/source/fox_2018.csv', header=None)
+df = pd.read_csv('C:/Users/storr/OneDrive - Danmarks Tekniske Universitet/Year 1/Semester 1/Computational Tools for Data Science/Project/DATA/FOX/fox_2016.csv', header=None)
 
 urls = df[2].tolist()
 urls = urls[1:]
@@ -16,7 +16,7 @@ start_index = 0
 
 count = 0 
 
-output_file = 'output_fox_2018.csv'
+output_file = 'C:/Users/storr/OneDrive - Danmarks Tekniske Universitet/Year 1/Semester 1/Computational Tools for Data Science/Project/DATA/FOX/fox_2016.csv'
 
 while start_index < total_links:
     end_index = min(start_index + batch_size, total_links)
