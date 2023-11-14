@@ -2,4 +2,4 @@
 *.log
 *.DS_Store
 filepaths.py 
-data/output
+data/output/
