@@ -4,8 +4,6 @@ import os
 # Define the directory where the files are stored
 directory = os.path.join(os.path.dirname(__file__), '../..', 'data', 'output')
 
-
-
 def overview_source():
     summary_dict = {}
 
