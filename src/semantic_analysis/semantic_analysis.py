@@ -16,6 +16,15 @@ import torch
 #import tensorflow_hub as hub
 
 
+def semantic_label(value):
+    if value == 0:
+        label = 'negative'
+    elif value == 1:
+        label = 'neutral'    
+    else:
+        label = 'positive'
+
+    return label        
 
 def roberta_semantic_algorithm(scrapped_data):
 
@@ -26,6 +35,8 @@ def roberta_semantic_algorithm(scrapped_data):
 
     labels = ['Negative', 'Neutral', 'Positive']
 
+    scrapped_data = scrapped_data.dropna()
+    #scrapped_data = scrapped_data[scrapped_data['Text'].apply(lambda x: isinstance(x, str))]
     txt_articles = list(scrapped_data['Text'])
 
     semantic_articles = []
@@ -39,15 +50,21 @@ def roberta_semantic_algorithm(scrapped_data):
         scores = softmax(scores)
 
         semantic_scores = []
-        for i in range(len(scores)):
-        
+        for i in range(len(scores)):        
             l = labels[i]
             s = scores[i]
-            semantic_scores.append(s)
+            semantic_scores.append(s)        
+
         semantic_scores = np.array(semantic_scores)
         semantic = np.argmax(semantic_scores)
-        semantic_articles.append(semantic)
+        semantic_articles.append(semantic)   
+            
+        
+    semantic_article_df = pd.DataFrame(semantic_articles)        
+    semantic_article_df['Semantic'] = semantic_article_df[0].apply(semantic_label)
+    semantic_articles_df = scrapped_data.drop(columns=['Text'])
+    semantic_articles_df['Semantic'] = semantic_article_df['Semantic'].values
 
-    return semantic_articles
+    return semantic_articles_df
 
 
