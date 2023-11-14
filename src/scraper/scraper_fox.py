@@ -4,16 +4,12 @@ from bs4 import BeautifulSoup
 import os
 
 # Load the CSV file
-<<<<<<< HEAD
-df = pd.read_csv('C:/Users/storr/OneDrive - Danmarks Tekniske Universitet/Year 1/Semester 1/Computational Tools for Data Science/Project/DATA/FOX/fox_2016.csv', header=None)
-=======
 df = pd.read_csv('../../data/source/fox_2014.xlxs', header=None)
 print(df)
 #subsel
 filtered_df = df[df[3] == "1"]
 
 print(filtered_df)
->>>>>>> b4600e4f84de443f098461229933e736e77faad9
 
 urls = filtered_df[2].tolist()
 urls = urls[1:]
