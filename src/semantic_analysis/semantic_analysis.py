@@ -4,6 +4,8 @@ from tensorflow.keras import layers
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from scipy.special import softmax
 import torch
+from textblob import TextBlob
+import nltk
 #import bert
 #!pip install bert-for-tf2
 #!pip install sentencepiece
@@ -24,7 +26,9 @@ def semantic_label(value):
     else:
         label = 'positive'
 
-    return label        
+    return label  
+
+   
 
 def roberta_semantic_algorithm(scrapped_data):
 
@@ -67,4 +71,27 @@ def roberta_semantic_algorithm(scrapped_data):
 
     return semantic_articles_df
 
+def lexicon(scraped_data):
+
+    scraped_data = scraped_data.dropna()
+    txt_articles = list(scraped_data['Text'])
+
+    semantic_articles = []
+
+    for txt in txt_articles: 
+
+        blob = TextBlob(txt)
+
+        # Perform sentiment analysis
+        sentiment_score = blob.sentiment.polarity
+
+        # Interpret the sentiment score
+        if sentiment_score > 0:
+            semantic_articles.append("Positive")
+        elif sentiment_score < 0:
+            semantic_articles.append("Negative")
+        else:
+            semantic_articles.append("Neutral")
+        
+    return    pd.DataFrame(semantic_articles)        
 
