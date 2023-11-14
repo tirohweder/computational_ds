@@ -21,7 +21,7 @@ start_index = 0
 
 count = 0 
 
-output_file = '../../data/output/fox_2014_output.csv'
+output_file = 'C:/Users/storr/OneDrive - Danmarks Tekniske Universitet/Year 1/Semester 1/Computational Tools for Data Science/Project/DATA/FOX/fox_2016.csv'
 
 while start_index < total_links:
     end_index = min(start_index + batch_size, total_links)
