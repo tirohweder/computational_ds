@@ -5,6 +5,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from scipy.special import softmax
 import torch
 from textblob import TextBlob
+from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
 #import bert
 #!pip install bert-for-tf2
@@ -71,17 +72,16 @@ def roberta_semantic_algorithm(scrapped_data):
 
     return semantic_articles_df
 
-def lexicon(scraped_data):
+def lexicon_blob(scraped_data):
 
     scraped_data = scraped_data.dropna()
     txt_articles = list(scraped_data['Text'])
 
     semantic_articles = []
 
+    blob = TextBlob(txt)
+
     for txt in txt_articles: 
-
-        blob = TextBlob(txt)
-
         # Perform sentiment analysis
         sentiment_score = blob.sentiment.polarity
 
@@ -95,3 +95,24 @@ def lexicon(scraped_data):
         
     return    pd.DataFrame(semantic_articles)        
 
+def lexicon_nltk(scraped_data):
+    scraped_data = scraped_data.dropna()
+    txt_articles = list(scraped_data['Text'])
+
+    nltk.download('vader_lexicon')
+    
+    semantic_articles = []
+
+    analyzer = SentimentIntensityAnalyzer()
+
+    for txt in txt_articles:
+        sentiment_score = analyzer.polarity_scores(txt)['compound']
+
+        if sentiment_score > 0:
+            semantic_articles.append("Positive")
+        elif sentiment_score < 0:
+            semantic_articles.append("Negative")
+        else:
+            semantic_articles.append("Neutral")
+
+    return pd.DataFrame(semantic_articles)
