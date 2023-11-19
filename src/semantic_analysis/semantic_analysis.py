@@ -31,27 +31,27 @@ def semantic_label(value):
 
    
 
-def roberta_semantic_algorithm(scrapped_data):
 
-    roberta = "cardiffnlp/twitter-roberta-base-sentiment"
+def roberta_semantic_algorithm(csv_file):
+    roberta = "fhamborg/roberta-targeted-sentiment-classification-newsarticles"
 
     model = AutoModelForSequenceClassification.from_pretrained(roberta)
     tokenizer = AutoTokenizer.from_pretrained(roberta)
 
     labels = ['Negative', 'Neutral', 'Positive']
 
-    scrapped_data = scrapped_data.dropna()
-    #scrapped_data = scrapped_data[scrapped_data['Text'].apply(lambda x: isinstance(x, str))]
-    txt_articles = list(scrapped_data['Text'])
+    scraped_data = pd.read_csv(csv_file)
+    scraped_data = scraped_data.dropna()
+    txt_articles = scraped_data['Text']
 
     semantic_articles = []
+    count = 1
 
     for txt in txt_articles: 
-
         encoded_txt = tokenizer(txt, return_tensors='pt', max_length=512)
         output = model(**encoded_txt)
 
-        scores = output[0][0].detach().numpy()
+        scores = output.logits[0].detach().numpy()
         scores = softmax(scores)
 
         semantic_scores = []
@@ -62,57 +62,32 @@ def roberta_semantic_algorithm(scrapped_data):
 
         semantic_scores = np.array(semantic_scores)
         semantic = np.argmax(semantic_scores)
-        semantic_articles.append(semantic)   
+        semantic_articles.append(semantic) 
+        print(count) 
+        count += 1 
             
-        
-    semantic_article_df = pd.DataFrame(semantic_articles)        
-    semantic_article_df['Semantic'] = semantic_article_df[0].apply(semantic_label)
-    semantic_articles_df = scrapped_data.drop(columns=['Text'])
-    semantic_articles_df['Semantic'] = semantic_article_df['Semantic'].values
+    scraped_data['Sentiment_RoBERTa'] = semantic_articles
+    scraped_data.to_csv(csv_file, index=False)  # Saving the changes to the original CSV file
+          
 
-    return semantic_articles_df
-
-def lexicon_blob(scraped_data):
-
-    scraped_data = scraped_data.dropna()
-    txt_articles = list(scraped_data['Text'])
-
-    semantic_articles = []
-
-    blob = TextBlob(txt)
-
-    for txt in txt_articles: 
-        # Perform sentiment analysis
-        sentiment_score = blob.sentiment.polarity
-
-        # Interpret the sentiment score
-        if sentiment_score > 0:
-            semantic_articles.append("Positive")
-        elif sentiment_score < 0:
-            semantic_articles.append("Negative")
-        else:
-            semantic_articles.append("Neutral")
-        
-    return    pd.DataFrame(semantic_articles)        
-
-def lexicon_nltk(scraped_data):
-    scraped_data = scraped_data.dropna()
-    txt_articles = list(scraped_data['Text'])
-
-    nltk.download('vader_lexicon')
+def lexicon_nltk(csv_file):
+    #nltk.download('vader_lexicon')
     
-    semantic_articles = []
+    scraped_data = pd.read_csv(csv_file)
+    scraped_data = scraped_data.dropna()
+    txt_articles = scraped_data['Text']
 
+    # Initialize the sentiment analyzer
     analyzer = SentimentIntensityAnalyzer()
+
+    sentiment_scores = []
 
     for txt in txt_articles:
         sentiment_score = analyzer.polarity_scores(txt)['compound']
+        sentiment_scores.append(sentiment_score)
 
-        if sentiment_score > 0:
-            semantic_articles.append("Positive")
-        elif sentiment_score < 0:
-            semantic_articles.append("Negative")
-        else:
-            semantic_articles.append("Neutral")
+    # Append sentiment scores as a new column to the existing DataFrame
+    scraped_data['Sentiment_Lexicon'] = sentiment_scores
 
-    return pd.DataFrame(semantic_articles)
+    # Save the updated DataFrame with sentiment scores to the CSV file
+    scraped_data.to_csv(csv_file, index=False, encoding='utf-8')
