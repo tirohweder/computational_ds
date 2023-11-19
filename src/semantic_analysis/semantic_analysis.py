@@ -4,7 +4,7 @@ from tensorflow.keras import layers
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from scipy.special import softmax
 import torch
-from textblob import TextBlob
+#from textblob import TextBlob
 import nltk
 #import bert
 #!pip install bert-for-tf2
