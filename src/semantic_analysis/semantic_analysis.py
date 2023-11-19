@@ -30,15 +30,12 @@ def semantic_label(value):
     return label  
 
    
-
-
 def roberta_semantic_algorithm(csv_file):
+
     roberta = "fhamborg/roberta-targeted-sentiment-classification-newsarticles"
 
     model = AutoModelForSequenceClassification.from_pretrained(roberta)
     tokenizer = AutoTokenizer.from_pretrained(roberta)
-
-    labels = ['Negative', 'Neutral', 'Positive']
 
     scraped_data = pd.read_csv(csv_file)
     scraped_data = scraped_data.dropna()
@@ -55,17 +52,14 @@ def roberta_semantic_algorithm(csv_file):
         scores = softmax(scores)
 
         semantic_scores = []
-        for i in range(len(scores)):        
-            l = labels[i]
+        for i in range(len(scores)):       
             s = scores[i]
             semantic_scores.append(s)        
 
         semantic_scores = np.array(semantic_scores)
-        semantic = np.argmax(semantic_scores)
-        semantic_articles.append(semantic) 
+        semantic_articles.append(semantic_scores) 
         print(count) 
-        count += 1 
-            
+        count += 1     
     scraped_data['Sentiment_RoBERTa'] = semantic_articles
     scraped_data.to_csv(csv_file, index=False)  # Saving the changes to the original CSV file
           

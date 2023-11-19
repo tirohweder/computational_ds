@@ -53,10 +53,10 @@ while start_index < total_links:
         else:
             article_content = None
         
-        scraped_data.append([count, headline_text, timestamp, article_content, url, 'FOX'])
+        scraped_data.append([count, headline_text, timestamp, article_content, 'FOX', url])
         
 
-    output_df = pd.DataFrame(scraped_data, columns=['ID', 'Headline', 'Date', 'Text', 'Link', 'Organization'])
+    output_df = pd.DataFrame(scraped_data, columns=['ID', 'Headline', 'Date', 'Text','Organization', 'Link'])
 
     if os.path.exists(output_file):
         output_df.to_csv(output_file, mode='a', header=False, index=False)
