@@ -9,6 +9,9 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import numpy as np
+from sklearn.metrics import davies_bouldin_score
+from sklearn.metrics import silhouette_score
+
 # Download necessary NLTK data
 nltk.download('punkt')
 nltk.download('wordnet')
@@ -62,12 +65,19 @@ filtered_cluster_labels = cluster_labels[filtered_indices]
 filtered_texts = df_filtered['Text'].tolist()
 filtered_headlines = df_filtered['Headline'].tolist()  # Assuming 'Headline' column exists
 
+davies_bouldin_idx = davies_bouldin_score(filtered_embedding, filtered_cluster_labels)
+
 # Prepare data for Plotly visualization
 plot_data = pd.DataFrame(filtered_embedding, columns=['UMAP_1', 'UMAP_2', 'UMAP_3'])
 plot_data['Cluster'] = filtered_cluster_labels
 plot_data['Text'] = filtered_texts
 plot_data['Headline'] = filtered_headlines  # Add headlines to the plot data
 
+if len(np.unique(filtered_cluster_labels)) > 1:
+    silhouette = silhouette_score(filtered_embedding, filtered_cluster_labels)
+    print("Silhouette Score:", silhouette)
+else:
+    print("Silhouette Score cannot be computed with a single cluster.")
 # 3D Plotting using Plotly
 fig = px.scatter_3d(
     plot_data,
@@ -78,7 +88,7 @@ fig = px.scatter_3d(
 )
 
 fig.update_layout(
-    title='KNN + TFIDF with Outlier Removal',
+    title='KNN + TFIDF with Outlier Removal 0.5204151351174, sil: 0.5733855',
     scene=dict(
         xaxis_title='UMAP 1',
         yaxis_title='UMAP 2',
@@ -87,3 +97,5 @@ fig.update_layout(
 )
 
 fig.show()
+
+print(davies_bouldin_idx)

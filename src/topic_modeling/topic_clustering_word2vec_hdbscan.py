@@ -6,6 +6,9 @@ import umap
 import plotly.express as px
 from nltk.tokenize import word_tokenize
 import nltk
+from sklearn.metrics import davies_bouldin_score
+from sklearn.metrics import silhouette_score
+
 from sklearn.cluster import KMeans
 import hdbscan
 
@@ -44,16 +47,27 @@ embedding = reducer.fit_transform(vector_representations)
 clusterer = hdbscan.HDBSCAN(min_cluster_size=15, gen_min_span_tree=True)
 cluster_labels = clusterer.fit_predict(embedding)
 
+filtered_indices = np.where(cluster_labels != -1)[0]
+df_filtered = df.iloc[filtered_indices].reset_index(drop=True)
 
 noise_filter = cluster_labels != -1
 filtered_data = embedding[noise_filter]
 filtered_labels = cluster_labels[noise_filter]
 filtered_headlines = df['Headline'][noise_filter].reset_index(drop=True)
 
+filtered_embedding = embedding[filtered_indices]
+filtered_cluster_labels = cluster_labels[filtered_indices]
+davies_bouldin_idx = davies_bouldin_score(filtered_embedding, filtered_cluster_labels)
 # Prepare data for Plotly visualization
 plot_data = pd.DataFrame(filtered_data, columns=['UMAP_1', 'UMAP_2', 'UMAP_3'])
 plot_data['Cluster'] = filtered_labels
 plot_data['Headline'] = filtered_headlines
+
+if len(np.unique(filtered_cluster_labels)) > 1:
+    silhouette = silhouette_score(filtered_embedding, filtered_cluster_labels)
+    print("Silhouette Score:", silhouette)
+else:
+    print("Silhouette Score cannot be computed with a single cluster.")
 
 # 3D Plotting using Plotly
 fig = px.scatter_3d(
@@ -64,7 +78,7 @@ fig = px.scatter_3d(
     color_continuous_scale=px.colors.qualitative.Set1
 )
 fig.update_layout(
-    title='HDBSCAN + Word2Vec',
+    title='HDBSCAN + Word2Vec 0.4501344330187903, sil: 0.5779301',
     scene=dict(
         xaxis_title='UMAP 1',
         yaxis_title='UMAP 2',
@@ -73,3 +87,4 @@ fig.update_layout(
 )
 
 fig.show()
+print(davies_bouldin_idx)
