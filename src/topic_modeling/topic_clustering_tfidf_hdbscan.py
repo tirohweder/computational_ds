@@ -17,6 +17,7 @@ from sklearn.metrics import davies_bouldin_score
 import glob
 import os
 
+directory_output = os.path.join(os.path.dirname(__file__), '../..', 'data', 'output')
 # Download necessary NLTK data
 nltk.download('punkt')
 nltk.download('wordnet')
@@ -41,17 +42,13 @@ def tokenize_and_lemmatize(text):
 #df.head(10000)
 
 
-
-
-
 tfidf_embeddings_file = "tfidf_embeddings.npz"
 
 if os.path.exists(tfidf_embeddings_file):
     X = load_npz(tfidf_embeddings_file)
 else:
     df = pd.DataFrame()
-    path = r'C:\Users\rohwe\Documents\DMAI\computational_ds\data\output/*.csv'
-    # Iterate over each CSV file in the directory
+    path = os.path.join(directory_output, '*.csv')
 
     frames = []
     column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link", "Sentiment"]
@@ -60,32 +57,37 @@ else:
         df1 = pd.read_csv(filename, header=None, skiprows=1)
         frames.append(df1)
 
-    # Concatenate all DataFrames, ignoring index to avoid index duplication
     df = pd.concat(frames, ignore_index=True)
     df.columns = column_names
     print(df)
 
-    # Text vectorization with custom tokenizer
     vectorizer = TfidfVectorizer(max_features=5000, tokenizer=tokenize_and_lemmatize)
     texts = df['Text'].tolist()
     X = vectorizer.fit_transform(texts)
 
-    # Save the TF-IDF embeddings
     save_npz(tfidf_embeddings_file, X)
 
 
 
 
-# UMAP for dimensionality reduction
-reducer = umap.UMAP(n_components=3, random_state=42)
-embedding = reducer.fit_transform(X.toarray())
-
+# Check if the UMAP embeddings file exists
+umap_embeddings_file = "umap_embeddings.npy"
+if os.path.exists(umap_embeddings_file):
+    embedding = np.load(umap_embeddings_file)
+else:
+    reducer = umap.UMAP(n_components=3, random_state=42)
+    embedding = reducer.fit_transform(X.toarray())
+    np.save(umap_embeddings_file, embedding)
 
 
 # HDBSCAN clustering on the reduced data
-clusterer = hdbscan.HDBSCAN(min_cluster_size=15, gen_min_span_tree=True)
-cluster_labels = clusterer.fit_predict(embedding)
-
+hdbscan_labels_file = "hdbscan_cluster_labels.npy"
+if os.path.exists(hdbscan_labels_file):
+    cluster_labels = np.load(hdbscan_labels_file)
+else:
+    clusterer = hdbscan.HDBSCAN(min_cluster_size=15, gen_min_span_tree=True)
+    cluster_labels = clusterer.fit_predict(embedding)
+    np.save(hdbscan_labels_file, cluster_labels)
 
 filtered_indices = np.where(cluster_labels != -1)[0]
 
@@ -95,7 +97,7 @@ df_filtered = df.iloc[filtered_indices].reset_index(drop=True)
 filtered_embedding = embedding[filtered_indices]
 filtered_cluster_labels = cluster_labels[filtered_indices]
 filtered_texts = df_filtered['Text'].tolist()
-filtered_headlines = df_filtered['Headline'].tolist()  # Assuming 'Headline' column exists
+filtered_headlines = df_filtered['Headline'].tolist()
 
 # Prepare data for Plotly visualization
 plot_data = pd.DataFrame(filtered_embedding, columns=['UMAP_1', 'UMAP_2', 'UMAP_3'])
