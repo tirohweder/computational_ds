@@ -11,19 +11,16 @@ from nltk.tokenize import word_tokenize
 import hdbscan
 from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import euclidean_distances
-
+from scipy.sparse import save_npz
+from scipy.sparse import load_npz
 from sklearn.metrics import davies_bouldin_score
 import glob
+import os
 
 # Download necessary NLTK data
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
-
-
-
-
-
 
 # Lemmatizer and Stop Words Initialization
 lemmatizer = WordNetLemmatizer()
@@ -44,32 +41,46 @@ def tokenize_and_lemmatize(text):
 #df.head(10000)
 
 
-# Create an empty DataFrame to store the combined data
-df = pd.DataFrame()
-path = '/home/timm/Projects/computational_ds/data/output/*.csv'
-# Iterate over each CSV file in the directory
-
-frames = []
-column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link", "Sentiment"]
-
-for filename in glob.glob(path):
-    df1 = pd.read_csv(filename, header=None, skiprows=1)
-    frames.append(df1)
 
 
-# Concatenate all DataFrames, ignoring index to avoid index duplication
-df = pd.concat(frames, ignore_index=True)
-df.columns = column_names
-print(df)
 
-texts = df['Text'].tolist()
-# Text vectorization with custom tokenizer
-vectorizer = TfidfVectorizer(max_features=5000, tokenizer=tokenize_and_lemmatize)
-X = vectorizer.fit_transform(texts)
+tfidf_embeddings_file = "tfidf_embeddings.npz"
+
+if os.path.exists(tfidf_embeddings_file):
+    X = load_npz(tfidf_embeddings_file)
+else:
+    df = pd.DataFrame()
+    path = r'C:\Users\rohwe\Documents\DMAI\computational_ds\data\output/*.csv'
+    # Iterate over each CSV file in the directory
+
+    frames = []
+    column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link", "Sentiment"]
+
+    for filename in glob.glob(path):
+        df1 = pd.read_csv(filename, header=None, skiprows=1)
+        frames.append(df1)
+
+    # Concatenate all DataFrames, ignoring index to avoid index duplication
+    df = pd.concat(frames, ignore_index=True)
+    df.columns = column_names
+    print(df)
+
+    # Text vectorization with custom tokenizer
+    vectorizer = TfidfVectorizer(max_features=5000, tokenizer=tokenize_and_lemmatize)
+    texts = df['Text'].tolist()
+    X = vectorizer.fit_transform(texts)
+
+    # Save the TF-IDF embeddings
+    save_npz(tfidf_embeddings_file, X)
+
+
+
 
 # UMAP for dimensionality reduction
 reducer = umap.UMAP(n_components=3, random_state=42)
 embedding = reducer.fit_transform(X.toarray())
+
+
 
 # HDBSCAN clustering on the reduced data
 clusterer = hdbscan.HDBSCAN(min_cluster_size=15, gen_min_span_tree=True)
@@ -139,5 +150,6 @@ fig.update_layout(
         zaxis_title='UMAP 3'
     )
 )
+fig.write_html("3d_plot.html")
 
 fig.show()

@@ -37,4 +37,4 @@ for year in range(2014, 2020):
             source_df.loc[selected_indices, 'selected'] = 1
 
     # Save the updated source file for the year
-    source_df.to_csv(f'../../data/source/selected_fox_{year}.csv', index=False)
+    #source_df.to_csv(f'../../data/source/selected_fox_{year}.csv', index=False)
