@@ -4,6 +4,7 @@ from tensorflow.keras import layers
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from scipy.special import softmax
 import torch
+import random
 #from textblob import TextBlob
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
@@ -19,11 +20,11 @@ import os
 
 #import tensorflow_hub as hub
 
-
+#labeling function for sentiment values
 def semantic_label(value):
-    if value == 0:
+    if value < -0.33:
         label = 'negative'
-    elif value == 1:
+    elif value < 0.33:
         label = 'neutral'    
     else:
         label = 'positive'
@@ -80,14 +81,15 @@ def lexicon_nltk(csv_file):
     sentiment_scores = []
 
     for txt in txt_articles:
-        sentiment_score = analyzer.polarity_scores(txt)['compound']
+        sentiment_score = analyzer.polarity_scores(txt)
         sentiment_scores.append(sentiment_score)
 
     # Append sentiment scores as a new column to the existing DataFrame
     scraped_data['Sentiment_Lexicon'] = sentiment_scores
 
+    return sentiment_scores
     # Save the updated DataFrame with sentiment scores to the CSV file
-    scraped_data.to_csv(csv_file, index=False, encoding='utf-8')
+    #scraped_data.to_csv(csv_file, index=False, encoding='utf-8')
 
 
 #roberta model for sentiment analysis that outputs three values [0, 1] weighting each negative, neutral or positive label
@@ -170,19 +172,20 @@ def check_weighted_sum_consistency(csv_file):
     for values in sentiment_values:
         # Calculate the weighted sum using values and weights
         weighted_sum = sum(value * coeffients[sentiment] for value, sentiment in zip(values, ['Negative', 'Neutral', 'Positive']))
-        
-        # Determine the sentiment category based on the weighted sum
-        '''if weighted_sum < 1:
-            calculated_sentiments.append('negative')
-        elif weighted_sum < 2:
-            calculated_sentiments.append('neutral')
-        else:
-            calculated_sentiments.append('positive')'''
         vector_trans_value = weighted_sum -2
+        calculated_sentiments.append(semantic_label(vector_trans_value))
     # Check consistency between calculated sentiments and actual sentiments
-    #consistencies = [calculated == actual for calculated, actual in zip(calculated_sentiments, actual_sentiments)]
+    consistencies = [calculated == actual for calculated, actual in zip(calculated_sentiments, actual_sentiments)]
     
-    #true_count = consistencies.count(True)
-    # #false_count = consistencies.count(False)
+    true_count = consistencies.count(True)
+    false_count = consistencies.count(False)
 
-    return vector_trans_value
+    return true_count, false_count
+
+#random sampling for choice of best model
+def sampling_articles(csv_file):
+    df = pd.read_csv(csv_file)
+    sample_csv = df.sample(n=5000)
+    return sample_csv
+
+
