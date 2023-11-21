@@ -65,8 +65,9 @@ def roberta_semantic_algorithm_news(csv_file):
     scraped_data['Sentiment_RoBERTa'] = semantic_articles
     scraped_data.to_csv(csv_file, index=False)  # Saving the changes to the original CSV file
         
-
+#vader lexicon library for sentiment analysis that outputs one value [-1, 1] classifying as negative, neutral or positive
 def lexicon_nltk(csv_file):
+    
     #nltk.download('vader_lexicon')
     
     scraped_data = pd.read_csv(csv_file)
@@ -88,6 +89,8 @@ def lexicon_nltk(csv_file):
     # Save the updated DataFrame with sentiment scores to the CSV file
     scraped_data.to_csv(csv_file, index=False, encoding='utf-8')
 
+
+#roberta model for sentiment analysis that outputs three values [0, 1] weighting each negative, neutral or positive label
 def roberta_semantic_algorithm_twitter(csv_file):
 
     roberta = "cardiffnlp/twitter-roberta-base-sentiment"
@@ -123,10 +126,7 @@ def roberta_semantic_algorithm_twitter(csv_file):
         semantic = np.argmax(semantic_score)
         semantic_articles.append(semantic)
         semantic_scores.append(semantic_score)
-
-
-            
-        
+  
     semantic_article_df = pd.DataFrame(semantic_articles)        
     semantic_article_df['Semantic'] = semantic_article_df[0].apply(semantic_label)
     semantic_articles_df = scraped_data.drop(columns=['Text'])
@@ -143,3 +143,46 @@ def roberta_semantic_algorithm_twitter(csv_file):
     # Save the changes to the new CSV file
     semantic_articles_df.to_csv(new_file_path, index=False)
 
+
+#vector transformation into a single value between -1 and 1 of semantic values given by roberta
+#done for comparison between the lexicon model
+def check_weighted_sum_consistency(csv_file):
+    # Read the CSV file
+    df = pd.read_csv(csv_file)
+    
+    # Extract values from column 6
+    sentiment_values = df.iloc[:, 6].apply(lambda x: [float(val) for val in x[1:-1].split()])
+    
+    # Extract actual sentiments from column 7
+    actual_sentiments = df.iloc[:, 7]  
+    
+    # Assign weights to sentiment categories
+    coeffients = {
+        'Negative': 1,
+        'Neutral': 2,
+        'Positive': 3
+    }
+    
+    # Initialize a list to store calculated sentiments based on weighted sum
+    calculated_sentiments = []
+    
+    # Calculate sentiment based on weighted sum for each row
+    for values in sentiment_values:
+        # Calculate the weighted sum using values and weights
+        weighted_sum = sum(value * coeffients[sentiment] for value, sentiment in zip(values, ['Negative', 'Neutral', 'Positive']))
+        
+        # Determine the sentiment category based on the weighted sum
+        '''if weighted_sum < 1:
+            calculated_sentiments.append('negative')
+        elif weighted_sum < 2:
+            calculated_sentiments.append('neutral')
+        else:
+            calculated_sentiments.append('positive')'''
+        vector_trans_value = weighted_sum -2
+    # Check consistency between calculated sentiments and actual sentiments
+    #consistencies = [calculated == actual for calculated, actual in zip(calculated_sentiments, actual_sentiments)]
+    
+    #true_count = consistencies.count(True)
+    # #false_count = consistencies.count(False)
+
+    return vector_trans_value
