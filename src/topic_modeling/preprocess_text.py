@@ -3,16 +3,16 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download('wordnet')
+nltk.download('stopwords', quiet=True)
+nltk.download('punkt', quiet=True)
+nltk.download('wordnet', quiet=True)
 
 def preprocess_text(text):
 
     words = word_tokenize(text)
 
     # Remove punctuation
-    words = [word for word in words if word.isalpha()]
+    words = [word for word in words if word.isalpha() and len(word) > 1]
 
     # Convert to lowercase
     words = [word.lower() for word in words]
@@ -24,5 +24,8 @@ def preprocess_text(text):
     # Lemmatization
     lemmatizer = WordNetLemmatizer()
     lemmatized_words = [lemmatizer.lemmatize(word) for word in words]
+    lemmatized_words = [word for word in lemmatized_words if len(word) > 1]
 
-    return lemmatized_words
+    lemmatized_text = ' '.join(lemmatized_words)
+
+    return lemmatized_text
