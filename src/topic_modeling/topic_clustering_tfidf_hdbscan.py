@@ -40,26 +40,27 @@ def tokenize_and_lemmatize(text):
 # Load your dataset
 #df = pd.read_csv('/home/timm/Projects/computational_ds/data/output/cnn_2014_output.csv')  # Update the path to your dataset
 #df.head(10000)
+df = pd.DataFrame()
+path = os.path.join(directory_output, '*.csv')
+
+frames = []
+column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link", "Sentiment"]
+
+for filename in glob.glob(path):
+    df1 = pd.read_csv(filename, header=None, skiprows=1)
+    frames.append(df1)
+
+df = pd.concat(frames, ignore_index=True)
+df.columns = column_names
+print(df)
 
 
 tfidf_embeddings_file = "tfidf_embeddings.npz"
 
 if os.path.exists(tfidf_embeddings_file):
+    print("Found TFIDF Embedding")
     X = load_npz(tfidf_embeddings_file)
 else:
-    df = pd.DataFrame()
-    path = os.path.join(directory_output, '*.csv')
-
-    frames = []
-    column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link", "Sentiment"]
-
-    for filename in glob.glob(path):
-        df1 = pd.read_csv(filename, header=None, skiprows=1)
-        frames.append(df1)
-
-    df = pd.concat(frames, ignore_index=True)
-    df.columns = column_names
-    print(df)
 
     vectorizer = TfidfVectorizer(max_features=5000, tokenizer=tokenize_and_lemmatize)
     texts = df['Text'].tolist()
@@ -69,21 +70,24 @@ else:
 
 
 
-
 # Check if the UMAP embeddings file exists
 umap_embeddings_file = "umap_embeddings.npy"
 if os.path.exists(umap_embeddings_file):
+    print("Found Umap Embeddings")
     embedding = np.load(umap_embeddings_file)
 else:
-    reducer = umap.UMAP(n_components=3, random_state=42)
+
+    reducer = umap.UMAP(n_components=3, random_state=42, low_memory=True)
     embedding = reducer.fit_transform(X.toarray())
     np.save(umap_embeddings_file, embedding)
+
 
 
 # HDBSCAN clustering on the reduced data
 hdbscan_labels_file = "hdbscan_cluster_labels.npy"
 if os.path.exists(hdbscan_labels_file):
     cluster_labels = np.load(hdbscan_labels_file)
+    print("Found Cluster Labels")
 else:
     clusterer = hdbscan.HDBSCAN(min_cluster_size=15, gen_min_span_tree=True)
     cluster_labels = clusterer.fit_predict(embedding)
