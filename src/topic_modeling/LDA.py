@@ -21,7 +21,7 @@ nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('wordnet')
 
-df=pd.read_csv("/Users/diegojimenez/Documents/GitHub/computational_ds/src/topic_modeling/updated_dataframe_with_clusters_word2vec.csv")
+df=pd.read_csc("updated_dataframe_with_clusters_word2vec.csv")
 
 def preprocess_text(df, text_column, custom_stopwords):
     clean_text_column = f"{text_column}_cleaned"
