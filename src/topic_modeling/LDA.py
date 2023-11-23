@@ -62,7 +62,7 @@ dictionary = corpora.Dictionary(df_clean_text["Text_cleaned"])
 # Create a corpus from the documents
 corpus = [dictionary.doc2bow(doc) for doc in df_clean_text["Text_cleaned"]]
 
-lda_model_F = LdaModel(corpus, num_topics=2, id2word=dictionary, passes=2)
+lda_model_F = LdaModel(corpus, num_topics=2000, id2word=dictionary, passes=10)
 
 vis = pyLDAvis.gensim_models.prepare(lda_model_F, corpus, dictionary)
 
