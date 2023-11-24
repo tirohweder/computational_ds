@@ -50,7 +50,7 @@ def main():
     # Adjust the width 
     st.set_page_config(layout="wide")
 
-    st.markdown("<h1 style='text-align: center; color: white;'>Smaller headline in black </h2>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: white;'>Computational Tools for Data Science - Final Project</h2>", unsafe_allow_html=True)
 
     # Create a two-column layout
     col1, col2 = st.columns([3,2])
