@@ -189,3 +189,11 @@ def sampling_articles(csv_file):
     df = pd.read_csv(csv_file)
     sample_csv = df.sample(n=5000)
     return sample_csv
+def merge_data(large_master_file_df, new_data_df, column = 'Semantic roberta twitter' ):
+
+
+    new_data_df = new_data_df.loc[:,['Headline', column]]
+
+    master_file_merged = pd.merge(large_master_file_df, new_data_df, on='Headline', how='left')
+
+    return master_file_merged
