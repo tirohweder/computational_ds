@@ -72,7 +72,6 @@ def lexicon_nltk(csv_file):
     
     scraped_data = pd.read_csv(csv_file)
     scraped_data = scraped_data[0:5]
-    scraped_data = scraped_data.dropna()
     txt_articles = scraped_data['Text']
 
     # Initialize the sentiment analyzer
@@ -116,7 +115,6 @@ def roberta_semantic_algorithm_twitter(csv_file):
 
     scraped_data = pd.read_csv(csv_file)
     #scraped_data = scraped_data[0:5]
-    scraped_data = scraped_data.dropna()
     #scrapped_data = scrapped_data[scrapped_data['Text'].apply(lambda x: isinstance(x, str))]
     txt_articles = list(scraped_data['Text'])
 
@@ -202,3 +200,12 @@ def check_weighted_sum_consistency(csv_file):
     # #false_count = consistencies.count(False)
 
     return sentiment_value
+
+def merge_data(large_master_file_df, new_data_df, column = 'Semantic roberta twitter' ):
+
+
+    new_data_df = new_data_df.loc[:,['Headline', column]]
+
+    master_file_merged = pd.merge(large_master_file_df, new_data_df, on='Headline', how='left')
+
+    return master_file_merged
