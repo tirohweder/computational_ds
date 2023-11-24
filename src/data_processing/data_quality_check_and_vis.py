@@ -46,6 +46,7 @@ def overview_source():
 
 def check_data_quality():
     report_dict = {}
+    total_rows_across_all_files = 0  # Initialize a counter for total rows
 
     for filename in os.listdir(directory):
         if filename.endswith('.csv'):
@@ -54,6 +55,9 @@ def check_data_quality():
                 file_path = os.path.join(directory, filename)
                 # Load the CSV file
                 df = pd.read_csv(file_path)
+
+                # Update total rows count
+                total_rows_across_all_files += df.shape[0]
 
                 # Create a report for the current file
                 report = {
@@ -72,6 +76,9 @@ def check_data_quality():
     print("\nData Quality Report:")
     for file, report in report_dict.items():
         print(f"{file}: {report}")
+
+    # Print the total number of rows across all files
+    print(f"\nTotal number of rows across all files: {total_rows_across_all_files}")
 
 
 
@@ -98,6 +105,6 @@ def remove_missing_values():
 
 #overview_source()
 
-remove_missing_values()
+#remove_missing_values()
 check_data_quality()
 #compare_links()

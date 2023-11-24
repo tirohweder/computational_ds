@@ -50,7 +50,7 @@ for index, row in df.iterrows():
 valid_vectors = np.array(valid_vectors)
 
 # UMAP dimensionality reduction
-reducer = umap.UMAP(n_components=3, min_dist=0)  # increased min_dist from default
+reducer = umap.UMAP(n_components=3, min_dist=0.1)  # increased min_dist from default
 embedding_3d = reducer.fit_transform(valid_vectors)
 
 # Create a new DataFrame with valid sentences and their labels
