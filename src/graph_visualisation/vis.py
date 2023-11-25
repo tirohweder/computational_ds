@@ -11,7 +11,7 @@ distance_df = pd.read_csv('centroid_distance_matrix_word2vec.csv', index_col=0)
 G = nx.Graph()
 
 # Load your data
-combined_df = pd.read_csv('updated_dataframe_with_clusters_word2vec.csv')
+combined_df = pd.read_csv('updated_dataframe_with_clusters_word2vec_15.csv')
 combined_df = combined_df[combined_df['Cluster'] != -1]
 
 # Count articles per cluster and normalize cluster sizes
