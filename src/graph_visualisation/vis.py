@@ -12,18 +12,17 @@ def count_articles(news_outlet, cluster):
     return count
 
 
-def edge_width(cluster_pair):
+def edge_width(cluster_pair, max_count):
 
     count = count_articles(cluster_pair[0][4:], cluster_pair[1])
-    if count >= max_count * 0.80:  # Adjust the threshold as needed, here set to 80% of the max
-        return 5
-    elif count >= max_count * 0.6:  # Adjust the threshold as needed, here set to 50% of the max
-        return 4
-    elif count >= max_count * 0.4:  # Adjust the threshold as needed, here set to 50% of the max
-        return 3
-    elif count >= max_count * 0.2:  # Adjust the threshold as needed, here set to 50% of the max
-        return 2
-        return 1
+    # Define the range for widths (0.5 to 8)
+    min_width = 0.5
+    max_width = 8.0
+
+    # Linear interpolation to scale the width between min and max based on count
+    scaled_width = min_width + (max_width - min_width) * (count / max_count)
+
+    return scaled_width
 
 def edge_color(cluster_pair):    
 
@@ -34,7 +33,7 @@ def edge_color(cluster_pair):
     if not filtered_df.empty:
 
         # Access the 'Semantic values roberta' column
-        semantic_values = filtered_df['Sentiment values roberta'].tolist()
+        semantic_values = filtered_df['Semantic roberta twitter'].tolist()
 
         semantic = sum(semantic_values)/len(semantic_values)
         
@@ -62,10 +61,6 @@ combined_df = pd.read_csv(os.path.join(base_path, "updated_dataframe_with_cluste
 
 combined_df = combined_df[combined_df['Cluster'] != -1]
 
-sentiment_df_label = combined_df.groupby(['Organization','Cluster', 'Semantic roberta twitter']).size().reset_index(name='Count')
-
-   
-
 # Count articles per cluster and normalize cluster sizes
 cluster_counts = combined_df['Cluster'].value_counts()
 scaler = MinMaxScaler(feature_range=(5, 15))  # Adjust range according to your preference
@@ -90,6 +85,11 @@ for org in combined_df['Organization'].unique():
     for cluster in org_df['Cluster'].unique():
         G.add_edge(f"Org_{org}", str(cluster))
 
+degrees = dict(G.degree())
+max_count = max(degrees.values())
+
+print(max_count)
+
 # Use MDS to compute the positions
 mds = MDS(n_components=2, dissimilarity='precomputed', random_state=6)
 mds_pos = mds.fit_transform(distance_df)
@@ -102,7 +102,7 @@ edge_y = []
 #edge_widths = []
 edge_traces = []
 
-max_count = max(count_articles(news_outlet, cluster) for (news_outlet, cluster) in G.edges())
+
 
 for edge in G.edges():
     if edge[0] in pos and edge[1] in pos:
@@ -110,11 +110,12 @@ for edge in G.edges():
         x1, y1 = pos[edge[1]]
         #edge_x.extend([x0, x1, None])
         #edge_y.extend([y0, y1, None])
-        width = edge_width(edge)
+        width = edge_width(edge, max_count)
         color = edge_color(edge)
         #edge_widths.extend([width, width, None])
         edge_trace = go.Scatter(x=[x0, x1, None], y=[y0, y1, None], line=dict(width=width, color=color), hoverinfo='none', mode='lines')
         edge_traces.append(edge_trace)
+
 # Extract node information and adjust sizes
 node_x = []
 node_y = []
