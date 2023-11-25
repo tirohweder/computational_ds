@@ -182,17 +182,17 @@ def check_weighted_sum_consistency(df):
 
         sentiment_value.append(vector_trans_value)
 
-    sentiment_series = pd.Series(sentiment_value, name='Sentiment value roberta twitter')#'Sentiment value lexicon'
+    sentiment_series = pd.Series(sentiment_value, name='Sentiment values roberta twitter')#'Sentiment value lexicon'
     return sentiment_series
 
 def sampling_articles(csv_file):
     df = pd.read_csv(csv_file)
     sample_csv = df.sample(n=5000)
     return sample_csv
-def merge_data(large_master_file_df, new_data_df, column = 'Semantic roberta twitter' ):
 
+def merge_data(large_master_file_df, new_data_df, column_1 = 'Sentiment value lexicon', column_2 = 'Sentiment lexicon', column_3= 'Semantic roberta twitter', column_4='Sentiment values roberta'):
 
-    new_data_df = new_data_df.loc[:,['Headline', column]]
+    new_data_df = new_data_df.loc[:,['Headline', column_1, column_2, column_3, column_4]]
 
     master_file_merged = pd.merge(large_master_file_df, new_data_df, on='Headline', how='left')
 
