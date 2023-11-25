@@ -103,8 +103,6 @@ def lexicon_nltk(csv_file):
     semantic_articles_df.to_csv(new_file_path, index=False)
 
 
-
-
 #roberta model for sentiment analysis that outputs three values [0, 1] weighting each negative, neutral or positive label
 def roberta_semantic_algorithm_twitter(csv_file):
 
@@ -161,7 +159,8 @@ def roberta_semantic_algorithm_twitter(csv_file):
 #vector transformation into a single value between -1 and 1 of semantic values given by roberta
 #done for comparison between the lexicon model
 def check_weighted_sum_consistency(df):
-    # Assign weights to sentiment categories
+
+    df['Semantic values roberta twitter'] = df['Semantic values roberta twitter'].apply(lambda x: np.array([float(value) for value in x.strip('[]').split()])) 
     coefficients = {
         'Negative': 1,
         'Neutral': 2,
@@ -172,7 +171,7 @@ def check_weighted_sum_consistency(df):
     sentiment_value = []
 
     # Calculate sentiment based on weighted sum for each row
-    for values in df['Sentiment scores lexicon']:
+    for values in df['Semantic values roberta twitter']: #df['Sentiment scores lexicon']:
         # Calculate the weighted sum using values and weights
         weighted_sum = np.sum(values * np.array([coefficients['Negative'], coefficients['Neutral'], coefficients['Positive']]))
 
@@ -181,9 +180,18 @@ def check_weighted_sum_consistency(df):
 
         sentiment_value.append(vector_trans_value)
 
-    sentiment_series = pd.Series(sentiment_value, name='Sentiment value lexicon')
+    sentiment_series = pd.Series(sentiment_value, name='Sentiment values roberta twitter')#'Sentiment value lexicon'
     return sentiment_series
+
 def sampling_articles(csv_file):
     df = pd.read_csv(csv_file)
     sample_csv = df.sample(n=5000)
     return sample_csv
+
+def merge_data(large_master_file_df, new_data_df, column_1 = 'Sentiment value lexicon', column_2 = 'Sentiment lexicon', column_3= 'Semantic roberta twitter', column_4='Sentiment values roberta'):
+
+    new_data_df = new_data_df.loc[:,['Headline', column_1, column_2, column_3, column_4]]
+
+    master_file_merged = pd.merge(large_master_file_df, new_data_df, on='Link', how='left')
+
+    return master_file_merged
