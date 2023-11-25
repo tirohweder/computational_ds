@@ -1,18 +1,70 @@
 import pandas as pd
 import networkx as nx
+import os
 import plotly.graph_objects as go
 from sklearn.manifold import MDS
 from sklearn.preprocessing import MinMaxScaler
+import matplotlib.colors as mcolors
+
+
+def count_articles(news_outlet, cluster):
+    count = combined_df[(combined_df['Cluster'] == cluster) & (combined_df['Organization'] == news_outlet)].shape[0]
+    return count
+
+
+def edge_width(cluster_pair):
+
+    count = count_articles(cluster_pair[0][4:], cluster_pair[1])
+    if count >= max_count * 0.80:  # Adjust the threshold as needed, here set to 80% of the max
+        return 5
+    elif count >= max_count * 0.6:  # Adjust the threshold as needed, here set to 50% of the max
+        return 4
+    elif count >= max_count * 0.4:  # Adjust the threshold as needed, here set to 50% of the max
+        return 3
+    elif count >= max_count * 0.2:  # Adjust the threshold as needed, here set to 50% of the max
+        return 2
+        return 1
+
+def edge_color(cluster_pair):    
+
+    filtered_df = combined_df[
+        (combined_df['Organization'] == cluster_pair[1][4:]) & (combined_df['Cluster'].apply(lambda x: str(cluster_pair[0]) in str(x)))
+    ]
+
+    if not filtered_df.empty:
+
+        # Access the 'Semantic values roberta' column
+        semantic_values = filtered_df['Sentiment values roberta'].tolist()
+
+        semantic = sum(semantic_values)/len(semantic_values)
+        
+        # Define a colormap ranging from red (negative) to white (neutral) to green (positive)
+        cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff0000', '#ffffff', '#00ff00'])
+  
+        # Map values to colors in the defined colormap
+        colors = mcolors.to_hex(cmap(semantic))
+        
+        return colors
+    else:
+        return 'grey'  # Default color if sentiment information is missing or edge not found
+
+     
+base_path = r"C:\Users\inest\OneDrive - Danmarks Tekniske Universitet\Semester I\Computational Tools for Data Science\data"
 
 # Load the distance matrix
-distance_df = pd.read_csv('centroid_distance_matrix_word2vec.csv', index_col=0)
+distance_df = pd.read_csv(os.path.join(base_path, "centroid_distance_matrix_word2vec_15.csv"), index_col=0)
 
 # Create a network graph
 G = nx.Graph()
 
 # Load your data
-combined_df = pd.read_csv('updated_dataframe_with_clusters_word2vec.csv')
+combined_df = pd.read_csv(os.path.join(base_path, "updated_dataframe_with_clusters_and_semantics.csv"))
+
 combined_df = combined_df[combined_df['Cluster'] != -1]
+
+sentiment_df_label = combined_df.groupby(['Organization','Cluster', 'Semantic roberta twitter']).size().reset_index(name='Count')
+
+   
 
 # Count articles per cluster and normalize cluster sizes
 cluster_counts = combined_df['Cluster'].value_counts()
@@ -47,15 +99,22 @@ pos.update(org_positions)
 # Extract edge information
 edge_x = []
 edge_y = []
+#edge_widths = []
+edge_traces = []
+
+max_count = max(count_articles(news_outlet, cluster) for (news_outlet, cluster) in G.edges())
+
 for edge in G.edges():
     if edge[0] in pos and edge[1] in pos:
         x0, y0 = pos[edge[0]]
         x1, y1 = pos[edge[1]]
-        edge_x.extend([x0, x1, None])
-        edge_y.extend([y0, y1, None])
-
-edge_trace = go.Scatter(x=edge_x, y=edge_y, line=dict(width=0.5, color='#888'), hoverinfo='none', mode='lines')
-
+        #edge_x.extend([x0, x1, None])
+        #edge_y.extend([y0, y1, None])
+        width = edge_width(edge)
+        color = edge_color(edge)
+        #edge_widths.extend([width, width, None])
+        edge_trace = go.Scatter(x=[x0, x1, None], y=[y0, y1, None], line=dict(width=width, color=color), hoverinfo='none', mode='lines')
+        edge_traces.append(edge_trace)
 # Extract node information and adjust sizes
 node_x = []
 node_y = []
@@ -81,7 +140,7 @@ node_trace = go.Scatter(x=node_x, y=node_y, mode='markers+text', text=node_text,
                         hoverinfo='text', marker=dict(showscale=False, color=node_color, size=node_size, line_width=2))
 
 # Create a figure
-fig = go.Figure(data=[edge_trace, node_trace],
+fig = go.Figure(data=[*edge_traces, node_trace],
                 layout=go.Layout(
                     title='<br>Organization-Cluster Sentiment Network',
                     titlefont_size=16,
