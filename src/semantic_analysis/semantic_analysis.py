@@ -103,8 +103,6 @@ def lexicon_nltk(csv_file):
     semantic_articles_df.to_csv(new_file_path, index=False)
 
 
-
-
 #roberta model for sentiment analysis that outputs three values [0, 1] weighting each negative, neutral or positive label
 def roberta_semantic_algorithm_twitter(csv_file):
 
@@ -194,6 +192,6 @@ def merge_data(large_master_file_df, new_data_df, column_1 = 'Sentiment value le
 
     new_data_df = new_data_df.loc[:,['Headline', column_1, column_2, column_3, column_4]]
 
-    master_file_merged = pd.merge(large_master_file_df, new_data_df, on='Headline', how='left')
+    master_file_merged = pd.merge(large_master_file_df, new_data_df, on='Link', how='left')
 
     return master_file_merged
