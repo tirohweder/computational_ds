@@ -103,8 +103,8 @@ def remove_missing_values():
                 print(f"Error processing {filename}: {e}")
 
 
-#overview_source()
 
+
+overview_source()
 #remove_missing_values()
-check_data_quality()
-#compare_links()
+#check_data_quality()
