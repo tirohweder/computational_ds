@@ -114,8 +114,8 @@ def roberta_semantic_algorithm_twitter(csv_file):
     labels = ['Negative', 'Neutral', 'Positive']
 
     scraped_data = pd.read_csv(csv_file)
-    #scraped_data = scraped_data[0:5]
-    #scrapped_data = scrapped_data[scrapped_data['Text'].apply(lambda x: isinstance(x, str))]
+    scraped_data = scraped_data[scraped_data['Organization']=='Reuters']
+
     txt_articles = list(scraped_data['Text'])
 
     semantic_articles = []
@@ -146,11 +146,12 @@ def roberta_semantic_algorithm_twitter(csv_file):
     semantic_articles_df['Semantic roberta twitter'] = semantic_article_df['Semantic'].values
 
     file_name = os.path.basename(csv_file)
-    parts = file_name.split('_')
-    journal = parts[0]
-    year = parts[1]
+    #parts = file_name.split('_')
+    #journal = parts[0]
+    #year = parts[1]
     base_path = os.path.dirname(csv_file)
-    new_file_path = os.path.join(base_path, f'{journal}_{year}_semantics_rob.csv')
+    new_file_path = os.path.join(base_path, f'reuters_final_semantics_rob.csv')
+    #new_file_path = os.path.join(base_path, f'{journal}_{year}_semantics_rob.csv')
 
     # Save the changes to the new CSV file
     semantic_articles_df.to_csv(new_file_path, index=False)
@@ -192,6 +193,6 @@ def merge_data(large_master_file_df, new_data_df, column_1 = 'Sentiment value le
 
     new_data_df = new_data_df.loc[:,['Headline', column_1, column_2, column_3, column_4]]
 
-    master_file_merged = pd.merge(large_master_file_df, new_data_df, on='Link', how='left')
+    master_file_merged = pd.merge(large_master_file_df, new_data_df, on='Headline', how='left')
 
     return master_file_merged
