@@ -3,18 +3,16 @@ import requests
 from bs4 import BeautifulSoup
 import os
 
-# Load the CSV file
+# Change this for each file
 df = pd.read_csv('../../data/source/fox_2014.xlxs', header=None)
-print(df)
-#subsel
-filtered_df = df[df[3] == "1"]
 
-print(filtered_df)
+# Only select articles that where selected by "scraper_selection.py"
+filtered_df = df[df[3] == "1"]
 
 urls = filtered_df[2].tolist()
 urls = urls[1:]
 
-# Set the batch size
+# Set the batch size (Helps if something crashes not to loose everything)
 batch_size = 1000
 total_links = len(urls)
 start_index = 0 

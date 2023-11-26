@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-# Load the CSV file
+# Change this for each file
 df = pd.read_csv('../../data/source/cnn_2017.csv', header=None)
 
 # Get the URLs
