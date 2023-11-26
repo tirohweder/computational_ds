@@ -6,7 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 def load_data():
-    path = os.path.join(os.path.dirname(__file__), '../..', 'data', 'output', 'updated_dataframe_with_clusters_word2vec.csv')
+    path = os.path.join(os.path.dirname(__file__), '../..', 'data', 'output', 'recommender_big_clusters_with_data.csv')
     df = pd.read_csv(path)
     return df
 
@@ -17,9 +17,11 @@ def extract_text(df, actual_news):
     return f"{text}...[read more]({link})"
 
 # Your code to generate results
-def generate_results(df):
+def generate_results(actual_news, df):
     # Replace this with your actual code to generate results
-    results = np.random.choice(df['Headline'], 3)
+    cluster = df.loc[df['Headline'] == actual_news].iloc[0]['Cluster']
+    filtered_df = df[df['Cluster'] == cluster]
+    results = np.random.choice(filtered_df['Headline'], 3)
     return results
 
 # Your code to generate Plotly plots
@@ -47,6 +49,24 @@ def load_lda():
 
 # Streamlit app
 def main():
+    # Initialize session state
+    if "df" not in st.session_state:
+        st.session_state.df = load_data()
+        print('df initialized')
+
+    if "current_index" not in st.session_state:
+        st.session_state.current_index = 0
+        print('index initialized')
+
+    if "actual_news" not in st.session_state:
+        st.session_state.actual_news = np.random.choice(st.session_state.df['Headline'])
+        # st.session_state.actual_news = 'At least 14 injured in blast, fire in Minneapolis apartment building'
+        print('news initialized')
+
+    if "recommendations" not in st.session_state:
+        st.session_state.recommendations = generate_results(st.session_state.actual_news, st.session_state.df)
+        print('recom initialized')
+
     # Adjust the width 
     st.set_page_config(layout="wide")
 
@@ -58,50 +78,62 @@ def main():
     with col1:
         # Function to update the current index based on the arrow button click
         def update_index(direction):
-            global current_index
             if direction == "next":
-                current_index = (current_index + 1) % 2
+                st.session_state.current_index = (st.session_state.current_index + 1) % 2
             elif direction == "prev":
-                current_index = (current_index - 1) % 2
+                st.session_state.current_index = (st.session_state.current_index - 1) % 2
 
         st.markdown("## Graphs")
 
         # Display the current image
-        st.components.v1.html(load_dbscan()[current_index], height=600, width=800, scrolling=True)
+        st.components.v1.html(load_dbscan()[st.session_state.current_index], height=600, width=800)
 
-        st.components.v1.html(load_lda()[current_index], height=600, width=800, scrolling=True)
 
-        if st.button("← Previous"):
-            update_index("prev")
-
-        if st.button("Next →"):
-            update_index("next")
-
-    with col2:
-        global actual_news, recommendations
-        # # Display results in the right column
-        st.header("Results")
-        selected_text = st.header("Select a text:")
-        selected_text.subheader(actual_news)
-        st.write(extract_text(df, actual_news))
+    with col2:     
+        section = st.header("")
+        section.header("Results")
+        section.subheader(st.session_state.actual_news)
+        # st.write(extract_text(st.session_state.df, st.session_state.actual_news))
         st.divider()
-        for text in recommendations:
-            if st.button(text):
-                recommendations = generate_results(df)
-                actual_news = text
-                selected_text.text(f"Selected Text: {text}")
-                break
+        recom0 = st.button(st.session_state.recommendations[0])
+        recom1 = st.button(st.session_state.recommendations[1])
+        recom2 = st.button(st.session_state.recommendations[2])
+        if recom0:
+            print('recom0')
+            st.session_state.actual_news = st.session_state.recommendations[0] 
+            section.subheader(st.session_state.actual_news)
+            st.session_state.recommendations = generate_results(st.session_state.actual_news, st.session_state.df)
+            st.rerun()
+
+
+        if recom1:
+            print('recom1')
+            st.session_state.actual_news = st.session_state.recommendations[1] 
+            section.subheader(st.session_state.actual_news)
+            st.session_state.recommendations = generate_results(st.session_state.actual_news, st.session_state.df)
+            st.rerun()
+
+
+        if recom2:
+            print('recom2')
+            st.session_state.actual_news = st.session_state.recommendations[2] 
+            section.subheader(st.session_state.actual_news)
+            st.session_state.recommendations = generate_results(st.session_state.actual_news, st.session_state.df)
+            st.rerun()
+
+
         st.divider()
-        
+    
+    st.components.v1.html(load_lda()[st.session_state.current_index], height=800)
 
+    # Create a two-column layout
+    col3, _, col4 = st.columns([1, 10, 1])
 
-df = load_data()
+    if col3.button("← Previous"):
+        update_index("prev")
 
-# Generate and display results from your code
-actual_news = np.random.choice(df['Headline'])
-recommendations = generate_results(df)
-
-current_index = 0
+    if col4.button("Next →"):
+        update_index("next")
 
 if __name__ == "__main__":
     main()
