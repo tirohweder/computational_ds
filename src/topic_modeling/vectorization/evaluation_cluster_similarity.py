@@ -56,10 +56,17 @@ def plot_metrics_comparison(all_results):
 
 # Load the datasets
 file_paths = [
-    "updated_dataframe_with_clusters_word2vec_15.csv",
-    "updated_dataframe_with_clusters_word2vec_30.csv",
-    "updated_dataframe_with_clusters_word2vec_50.csv"
+    r"C:\Users\rohwe\Documents\DMAI\computational_ds\src\topic_modeling\vectorization\old"
+    r"\updated_dataframe_with_clusters_word2vec_15.csv",
+    r"C:\Users\rohwe\Documents\DMAI\computational_ds\src\topic_modeling\vectorization\old"
+    r"\updated_dataframe_with_clusters_word2vec_30.csv",
+    r"C:\Users\rohwe\Documents\DMAI\computational_ds\src\topic_modeling\vectorization\old"
+    r"\updated_dataframe_with_clusters_word2vec_50.csv",
+    r"C:\Users\rohwe\Documents\DMAI\computational_ds\src\topic_modeling\vectorization"
+    r"\updated_dataframe_with_clusters_tfidf_15.csv",
+
 ]
+#    "updated_dataframe_with_clusters_word2vec_50.csv"
 
 # Reading the datasets into dataframes
 dfs = [pd.read_csv(file_path) for file_path in file_paths]
@@ -69,7 +76,7 @@ all_results = {}
 descriptive_stats = {}
 pair_labels = ['15-30', '15-50', '30-50']
 
-for (i, j), label in zip(itertools.combinations(range(3), 2), pair_labels):
+for (i, j), label in zip(itertools.combinations(range(len(file_paths)), 2), pair_labels):
     all_results[label] = calculate_all_metrics(dfs[i], dfs[j])
     descriptive_stats[f'Dataset {i+1}'] = calculate_descriptive_stats(dfs[i])
     descriptive_stats[f'Dataset {j+1}'] = calculate_descriptive_stats(dfs[j])
