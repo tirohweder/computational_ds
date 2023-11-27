@@ -5,15 +5,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def calculate_all_metrics(df1, df2):
-    ari = adjusted_rand_score(df1['Cluster'], df2['Cluster'])
-    fmi = fowlkes_mallows_score(df1['Cluster'], df2['Cluster'])
-    nmi = normalized_mutual_info_score(df1['Cluster'], df2['Cluster'])
+    # Calculating clustering metrics between two dataframes
+    ari = adjusted_rand_score(df1['Cluster'], df2['Cluster'])  # Adjusted Rand Index
+    fmi = fowlkes_mallows_score(df1['Cluster'], df2['Cluster'])  # Fowlkes-Mallows Index
+    nmi = normalized_mutual_info_score(df1['Cluster'], df2['Cluster'])  # Normalized Mutual Information
     return ari, fmi, nmi
 
 def calculate_descriptive_stats(df):
-    total_clusters = df['Cluster'].nunique()
-    no_cluster_assignments = (df['Cluster'] == -1).sum()
-    assigned_clusters = df[df['Cluster'] != -1]
+    # Calculating descriptive statistics for clustering in a dataframe
+    total_clusters = df['Cluster'].nunique()  # Total number of unique clusters
+    no_cluster_assignments = (df['Cluster'] == -1).sum()  # Count of unassigned items (labeled as -1)
+    assigned_clusters = df[df['Cluster'] != -1]  # Dataframe with only assigned clusters
+    # Average, median, max, and min size of clusters
     average_cluster_size = assigned_clusters['Cluster'].value_counts().mean()
     median_cluster_size = assigned_clusters['Cluster'].value_counts().median()
     max_cluster_size = assigned_clusters['Cluster'].value_counts().max()
@@ -29,24 +32,24 @@ def calculate_descriptive_stats(df):
     }
 
 def plot_metrics_comparison(all_results):
+    # Plotting comparison of clustering metrics for different dataset pairs
     labels = list(all_results.keys())
+    # Extracting scores for each metric from results
     ari_scores = [result[0] for result in all_results.values()]
     fmi_scores = [result[1] for result in all_results.values()]
     nmi_scores = [result[2] for result in all_results.values()]
 
-    print(f'ARI Scores: {ari_scores}')
-    print(f'FMI Scores: {fmi_scores}')
-    print(f'NMI Scores: {nmi_scores}')
+    # Setting up bar plot parameters
     bar_width = 0.25
-    r1 = np.arange(len(labels))
-    r2 = [x + bar_width for x in r1]
-    r3 = [x + bar_width for x in r2]
+    r1 = np.arange(len(labels))  # positions for the first set of bars
+    r2 = [x + bar_width for x in r1]  # positions for the second set of bars
+    r3 = [x + bar_width for x in r2]  # positions for the third set of bars
 
     plt.figure(figsize=(10, 6))
     plt.bar(r1, ari_scores, color='#0b132b', width=bar_width, edgecolor='grey', label='ARI')
     plt.bar(r2, fmi_scores, color='#1c2541', width=bar_width, edgecolor='grey', label='FMI')
     plt.bar(r3, nmi_scores, color='#3a506b', width=bar_width, edgecolor='grey', label='NMI')
-
+    # Setting labels and title
     plt.xlabel('Dataset Pairs', fontweight='bold', fontsize=15)
     plt.ylabel('Scores', fontweight='bold', fontsize=15)
     plt.xticks([r + bar_width for r in range(len(labels))], labels)
@@ -56,11 +59,8 @@ def plot_metrics_comparison(all_results):
 
 # Load the datasets
 file_paths = [
-    "updated_dataframe_with_clusters_word2vec_15.csv",
-    "updated_dataframe_with_clusters_word2vec_30.csv",
-    "updated_dataframe_with_clusters_word2vec_50.csv"
+    # File paths for various datasets
 ]
-
 # Reading the datasets into dataframes
 dfs = [pd.read_csv(file_path) for file_path in file_paths]
 
@@ -69,14 +69,16 @@ all_results = {}
 descriptive_stats = {}
 pair_labels = ['15-30', '15-50', '30-50']
 
-for (i, j), label in zip(itertools.combinations(range(3), 2), pair_labels):
+for (i, j), label in zip(itertools.combinations(range(len(file_paths)), 2), pair_labels):
+    # Calculating metrics for each pair of datasets
     all_results[label] = calculate_all_metrics(dfs[i], dfs[j])
+    # Calculating descriptive statistics for each dataset in the pair
     descriptive_stats[f'Dataset {i+1}'] = calculate_descriptive_stats(dfs[i])
     descriptive_stats[f'Dataset {j+1}'] = calculate_descriptive_stats(dfs[j])
 
 # Plotting the metrics comparison
 plot_metrics_comparison(all_results)
 
-# Optional: Print descriptive statistics
+# Optional: Print descriptive statistics for each dataset
 for dataset, stats in descriptive_stats.items():
     print(f"{dataset}:\n", "\n".join([f"{key}: {value}" for key, value in stats.items()]), "\n")

@@ -3,63 +3,63 @@ import requests
 from bs4 import BeautifulSoup
 import os
 
-# Change this for each file
-df = pd.read_csv('../../data/source/fox_2014.xlxs', header=None)
+# Read the CSV file containing URLs
+df = pd.read_csv('../../data/source/fox_2014.csv', header=None)
 
-# Only select articles that where selected by "scraper_selection.py"
+# Filter the DataFrame to include only selected articles
 filtered_df = df[df[3] == "1"]
 
+# Extract URLs from the filtered DataFrame
 urls = filtered_df[2].tolist()
 urls = urls[1:]
 
-# Set the batch size (Helps if something crashes not to loose everything)
+# Set the number of URLs to process in each batch to prevent data loss in case of a crash
 batch_size = 1000
 total_links = len(urls)
-start_index = 0 
+start_index = 0
 
-count = 0 
+count = 0  # Initialize a counter for scraped articles
 
-output_file = 'C:/Users/storr/OneDrive - Danmarks Tekniske Universitet/Year 1/Semester 1/Computational Tools for Data Science/Project/DATA/FOX/fox_2016.csv'
+# Define the output file path for the scraped data
+output_file = '../../output/fox_2016.csv'
 
+# Loop over batches of URLs
 while start_index < total_links:
-    end_index = min(start_index + batch_size, total_links)
-    batch_urls = urls[start_index:end_index]
+    end_index = min(start_index + batch_size, total_links)  # Determine the end index for the current batch
+    batch_urls = urls[start_index:end_index]  # Extract the current batch of URLs
 
-    scraped_data = []
+    scraped_data = []  # List to store data for the current batch
 
-    for url in batch_urls:  
+    for url in batch_urls:
         count += 1
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-    
+        response = requests.get(url)  # Send a request to the URL
+        soup = BeautifulSoup(response.content, 'html.parser')  # Parse the HTML content
+
+        # Scrape the headline
         headline_tag = soup.find('h1', {'class': 'headline'})
-        if headline_tag:
-            headline_text = headline_tag.text.strip()
-        else:
-            headline_text = None
+        headline_text = headline_tag.text.strip() if headline_tag else None
 
+        # Scrape the timestamp
         timestamp_tag = soup.find('span', {'class': 'article-date'})
-        if timestamp_tag:
-            timestamp = ' '.join(timestamp_tag.text.replace('\n', ' ').replace('\t', ' ').strip().split())
-        else:
-            timestamp = None
+        timestamp = ' '.join(
+            timestamp_tag.text.replace('\n', ' ').replace('\t', ' ').strip().split()) if timestamp_tag else None
 
-        # Parsing article content
+        # Scrape the article content
         article_content_tag = soup.find('div', {'class': 'article-body'})
-        if article_content_tag:
-            article_content = ' '.join(article_content_tag.text.replace('\n', ' ').replace('\t', ' ').split())
-        else:
-            article_content = None
-        
+        article_content = ' '.join(
+            article_content_tag.text.replace('\n', ' ').replace('\t', ' ').split()) if article_content_tag else None
+
+        # Append the scraped data to the list
         scraped_data.append([count, headline_text, timestamp, article_content, 'FOX', url])
-        
 
-    output_df = pd.DataFrame(scraped_data, columns=['ID', 'Headline', 'Date', 'Text','Organization', 'Link'])
+    # Create a DataFrame from the scraped data
+    output_df = pd.DataFrame(scraped_data, columns=['ID', 'Headline', 'Date', 'Text', 'Organization', 'Link'])
 
+    # Save the DataFrame to a CSV file, appending to it if it already exists
     if os.path.exists(output_file):
         output_df.to_csv(output_file, mode='a', header=False, index=False)
     else:
         output_df.to_csv(output_file, index=False)
 
-    # Increment the start_index to continue with the next batch
+    # Update the start_index for the next batch
     start_index = end_index

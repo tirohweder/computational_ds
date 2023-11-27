@@ -13,7 +13,7 @@ There are 3 scraper files, reuters, cnn, and fox. Each is individual and needs t
 
 # Topic Modeling LDA
 
-# Topic Modeling Visualisation
+# Topic Modeling Vectorizer
 
 
 # Sentiment Analysis
