@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import os
-import plotly.express as px
-import plotly.graph_objects as go
 
 # Function to load data from a CSV file
 def load_data():
