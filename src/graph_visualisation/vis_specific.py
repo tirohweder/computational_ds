@@ -37,7 +37,7 @@ def edge_color(cluster_pair):
         semantic = sum(semantic_values) / len(semantic_values)
         
         # Adjusted colormap to map from red to white to green for values from -1 to 1
-        cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff0000', '#ffff00', '#00ff00'])
+        cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff000080', '#ffff00', '#00ff00'])
 
         # Normalize semantic value to the range [0, 1] to fit the colormap
         normalized_semantic = (semantic + 1) / 2  # Scale to [0, 1] from [-1, 1]
