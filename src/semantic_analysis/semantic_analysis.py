@@ -87,7 +87,7 @@ def lexicon_nltk(csv_file):
     semantic_articles_df['Sentiment scores lexicon'] = sentiment_scores
 
     # Calculate weighted sentiment values
-    semantic_articles_df['Sentiment value lexicon'] = check_weighted_sum_consistency(semantic_articles_df)
+#    semantic_articles_df['Sentiment value lexicon'] = check_weighted_sum_consistency(semantic_articles_df)
 
     # Apply semantic_label to categorize sentiment values
     semantic_articles_df['Sentiment lexicon'] = semantic_articles_df['Sentiment value lexicon'].apply(semantic_label)
@@ -101,6 +101,8 @@ def lexicon_nltk(csv_file):
 
     # Save the changes to the new CSV file
     semantic_articles_df.to_csv(new_file_path, index=False)
+
+    return semantic_articles_df
 
 
 #roberta model for sentiment analysis that outputs three values [0, 1] weighting each negative, neutral or positive label
@@ -161,7 +163,7 @@ def roberta_semantic_algorithm_twitter(csv_file):
 #done for comparison between the lexicon model
 def check_weighted_sum_consistency(df):
 
-    df['Semantic values roberta twitter'] = df['Semantic values roberta twitter'].apply(lambda x: np.array([float(value) for value in x.strip('[]').split()])) 
+    #df['Semantic values roberta twitter'] = df['Semantic values roberta twitter'].apply(lambda x: np.array([float(value) for value in x.strip('[]').split()])) 
     coefficients = {
         'Negative': 1,
         'Neutral': 2,
@@ -172,7 +174,7 @@ def check_weighted_sum_consistency(df):
     sentiment_value = []
 
     # Calculate sentiment based on weighted sum for each row
-    for values in df['Semantic values roberta twitter']: #df['Sentiment scores lexicon']:
+    for values in df['Sentiment scores lexicon']: #df['Semantic values roberta twitter']: #:
         # Calculate the weighted sum using values and weights
         weighted_sum = np.sum(values * np.array([coefficients['Negative'], coefficients['Neutral'], coefficients['Positive']]))
 
