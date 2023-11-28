@@ -23,7 +23,7 @@ Make sure you have the following Python packages installed:
 - pyLDAvis
 
     ```bash
-        pip install gensim pandas nltk pyLDAvis
+    pip install gensim pandas nltk pyLDAvis
         ```
 
 ## Results
