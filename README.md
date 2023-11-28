@@ -23,8 +23,10 @@ Make sure you have the following Python packages installed:
 - pyLDAvis
 
     ```bash
-    pip install gensim pandas nltk pyLDAvis
+    pip install -r requirements.txt
     ```
+
+
 
 ## Results
 - **coherence_scores.csv**: CSV file containing coherence scores for different numbers of topics.
@@ -57,6 +59,11 @@ The evaluation of the clusters is done in the _evaluation_cluster_similarity.py_
 
 # Sentiment Analysis
 
+Prerequisites: in src/data/output the scraped files need to be present. To run the code you need to load the CSV file "updated_dataframe_with_clusters_word2vec.csv" or the scraped files located in _src/data/output_
+
+For this topic all changes were done in src/sentiment_analysis. The files created during scrapping were used to apply the functions created in sentiment_analyis.py. Running the results.ipynb will output separate files for the lexicon and roberta approach, xxx_year_semantics_lex.csv and xxx_year_semantics_rob.csv. To this files later on will be applied functions to normalize their results (weighted_trans_lex and weighted_trans_rob) and they will also be merged to create a sample following the sampling function for comparison which will output the file semantic_sampling.csv. In this results file a visualization of the previous comparison can also be done at the end.
+
+With this results, the most appropriate semantic function will be applied to "updated_dataframe_with_clusters_word2vec.csv" where the final results for each cluster will be calculated. 
 
 # Recommender System
 
