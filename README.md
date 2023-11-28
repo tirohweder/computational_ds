@@ -23,8 +23,10 @@ Make sure you have the following Python packages installed:
 - pyLDAvis
 
     ```bash
-    pip install gensim pandas nltk pyLDAvis
+    pip install -r requirements.txt
     ```
+
+
 
 ## Results
 - **coherence_scores.csv**: CSV file containing coherence scores for different numbers of topics.
