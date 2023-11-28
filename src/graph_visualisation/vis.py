@@ -17,7 +17,7 @@ def edge_width(cluster_pair, max_count):
     count = count_articles(cluster_pair)
     # Define the range for widths 
     min_width = 0.1
-    max_width = 5.0
+    max_width = 1
 
     # Linear interpolation to scale the width between min and max based on count
     scaled_width = min_width + (max_width - min_width) * (count / max_count)
