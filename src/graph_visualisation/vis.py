@@ -15,9 +15,9 @@ def count_articles(cluster_pair):
 def edge_width(cluster_pair, max_count):
 
     count = count_articles(cluster_pair)
-    # Define the range for widths (0.5 to 8)
-    min_width = 0.5
-    max_width = 8.0
+    # Define the range for widths 
+    min_width = 0.1
+    max_width = 5.0
 
     # Linear interpolation to scale the width between min and max based on count
     scaled_width = min_width + (max_width - min_width) * (count / max_count)
@@ -38,7 +38,7 @@ def edge_color(cluster_pair):
         semantic = sum(semantic_values)/len(semantic_values)
         
         # Define a colormap ranging from red (negative) to white (neutral) to green (positive)
-        cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff0000', '#ffffff', '#00ff00'])
+        cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff0000', '#ffff00', '#00ff00'])
   
         # Map values to colors in the defined colormap
         colors = mcolors.to_hex(cmap(semantic))
@@ -48,17 +48,15 @@ def edge_color(cluster_pair):
         return 'grey'  # Default color if sentiment information is missing or edge not found
 
      
-base_path = r""
-
+base_path = r"C:\Users\inest\OneDrive - Danmarks Tekniske Universitet\Semester I\Computational Tools for Data Science\data"
 # Load the distance matrix
-distance_df = pd.read_csv(os.path.join("centroid_distance_matrix_word2vec_15.csv"), index_col=0)
+distance_df = pd.read_csv(os.path.join(base_path, "centroid_distance_matrix_word2vec_15.csv"), index_col=0)
 
 # Create a network graph
 G = nx.Graph()
 
 # Load your data
-combined_df = pd.read_csv(os.path.join(
-    "../topic_modeling/vectorization/updated_dataframe_with_clusters_and_semantics.csv"))
+combined_df = pd.read_csv(os.path.join(base_path,"combined_files.csv"))
 
 combined_df = combined_df[combined_df['Cluster'] != -1]
 
@@ -88,8 +86,6 @@ for org in combined_df['Organization'].unique():
 
 degrees = dict(G.degree())
 max_count = max(degrees.values())
-
-print(max_count)
 
 # Use MDS to compute the positions
 mds = MDS(n_components=2, dissimilarity='precomputed', random_state=6)

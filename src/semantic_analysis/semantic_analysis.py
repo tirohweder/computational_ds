@@ -86,7 +86,7 @@ def lexicon_nltk(csv_file):
     journal = parts[0]
     year = parts[1]
     base_path = os.path.dirname(csv_file)
-    new_file_path = os.path.join(base_path, f'{journal}_{year}_semantics_lex.csv')
+    new_file_path = os.path.join(base_path, f'{journal}_{year}_semantics.csv')
 
     # Save the changes to the new CSV file
     semantic_articles_df.to_csv(new_file_path, index=False)
