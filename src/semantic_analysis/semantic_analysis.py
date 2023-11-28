@@ -7,16 +7,6 @@ import torch
 import random
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import os
-#import bert
-#!pip install bert-for-tf2
-#!pip install sentencepiece
-#try:
-#    %tensorflow_version 2.x
-#except Exception:
-#    pass
-#import tensorflow as tf
-
-#import tensorflow_hub as hub
 
 #labeling function for sentiment values
 def semantic_label(value):
@@ -72,6 +62,7 @@ def lexicon_nltk(csv_file):
     scraped_data = pd.read_csv(csv_file)
     txt_articles = scraped_data['Text']
 
+
     # Initialize the sentiment analyzer
     analyzer = SentimentIntensityAnalyzer()
 
@@ -82,15 +73,13 @@ def lexicon_nltk(csv_file):
         sentiment_score = np.array(list(sentiment_score.values())[0:3])
         sentiment_scores.append(sentiment_score)
 
-
+    
     semantic_articles_df = scraped_data.drop(columns=['Text'])
     semantic_articles_df['Sentiment scores lexicon'] = sentiment_scores
 
-    # Calculate weighted sentiment values
-    semantic_articles_df['Sentiment value lexicon'] = check_weighted_sum_consistency(semantic_articles_df)
-
-    # Apply semantic_label to categorize sentiment values
-    semantic_articles_df['Sentiment lexicon'] = semantic_articles_df['Sentiment value lexicon'].apply(semantic_label)
+    # Calculate weighted sentiment values and apply labels
+    semantic_articles_df['Sentiment value lexicon'] = weighted_trans_lex(semantic_articles_df)
+    #semantic_articles_df['Sentiment lexicon'] = semantic_articles_df['Sentiment value lexicon'].apply(semantic_label)
 
     file_name = os.path.basename(csv_file)
     parts = file_name.split('_')
@@ -114,7 +103,6 @@ def roberta_semantic_algorithm_twitter(csv_file):
     labels = ['Negative', 'Neutral', 'Positive']
 
     scraped_data = pd.read_csv(csv_file)
-    scraped_data = scraped_data[scraped_data['Organization']=='Reuters']
 
     txt_articles = list(scraped_data['Text'])
 
@@ -139,19 +127,20 @@ def roberta_semantic_algorithm_twitter(csv_file):
         semantic_articles.append(semantic)
         semantic_scores.append(semantic_score)
   
+    #get scores and labels for sentiments
     semantic_article_df = pd.DataFrame(semantic_articles)        
     semantic_article_df['Semantic'] = semantic_article_df[0].apply(semantic_label)
     semantic_articles_df = scraped_data.drop(columns=['Text'])
     semantic_articles_df['Semantic values roberta twitter'] = semantic_scores
     semantic_articles_df['Semantic roberta twitter'] = semantic_article_df['Semantic'].values
 
+    #get correct name for file
     file_name = os.path.basename(csv_file)
-    #parts = file_name.split('_')
-    #journal = parts[0]
-    #year = parts[1]
+    parts = file_name.split('_')
+    journal = parts[0]
+    year = parts[1]
     base_path = os.path.dirname(csv_file)
-    new_file_path = os.path.join(base_path, f'reuters_final_semantics_rob.csv')
-    #new_file_path = os.path.join(base_path, f'{journal}_{year}_semantics_rob.csv')
+    new_file_path = os.path.join(base_path, f'{journal}_{year}_semantics_rob.csv')
 
     # Save the changes to the new CSV file
     semantic_articles_df.to_csv(new_file_path, index=False)
@@ -159,7 +148,7 @@ def roberta_semantic_algorithm_twitter(csv_file):
 
 #vector transformation into a single value between -1 and 1 of semantic values given by roberta
 #done for comparison between the lexicon model
-def check_weighted_sum_consistency(df):
+def weighted_trans_rob(df):
 
     df['Semantic values roberta twitter'] = df['Semantic values roberta twitter'].apply(lambda x: np.array([float(value) for value in x.strip('[]').split()])) 
     coefficients = {
@@ -181,12 +170,40 @@ def check_weighted_sum_consistency(df):
 
         sentiment_value.append(vector_trans_value)
 
-    sentiment_series = pd.Series(sentiment_value, name='Sentiment values roberta twitter')#'Sentiment value lexicon'
+    sentiment_series = pd.Series(sentiment_value, name='Sentiment value roberta')#'Sentiment value lexicon'
     return sentiment_series
 
+#vector transformation into a single value between -1 and 1 of semantic values given by lexicon
+#done for comparison between the roberta model
+def weighted_trans_lex(df):
+
+    coefficients = {
+        'Negative': 1,
+        'Neutral': 2,
+        'Positive': 3
+    }
+
+    # Initialize a list to store calculated sentiments based on weighted sum
+    sentiment_value = []
+
+    # Calculate sentiment based on weighted sum for each row
+    for values in df['Sentiment scores lexicon']:
+        # Calculate the weighted sum using values and weights
+
+        weighted_sum = np.sum(values * np.array([coefficients['Negative'], coefficients['Neutral'], coefficients['Positive']]))
+
+        # Perform vector transformation
+        vector_trans_value = weighted_sum - 2
+
+        sentiment_value.append(vector_trans_value)
+
+    return sentiment_value
+
+
+#sampling for decision between sentiment analysis aproaches
 def sampling_articles(csv_file):
     df = pd.read_csv(csv_file)
-    sample_csv = df.sample(n=5000)
+    sample_csv = df.sample(n=1000)
     return sample_csv
 
 def merge_data(large_master_file_df, new_data_df, column_1 = 'Sentiment value lexicon', column_2 = 'Sentiment lexicon', column_3= 'Semantic roberta twitter', column_4='Sentiment values roberta'):

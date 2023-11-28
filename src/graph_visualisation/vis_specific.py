@@ -24,28 +24,23 @@ def edge_width(cluster_pair, max_count):
 
     return scaled_width
 
-def edge_color(cluster_pair):    
-
+def edge_color(cluster_pair, lower_threshold=-0.5, upper_threshold=0.5):    
     filtered_df = combined_df[
         (combined_df['Organization'] == cluster_pair[1][4:]) & (combined_df['Cluster'].apply(lambda x: str(cluster_pair[0]) in str(x)))
     ]
 
     if not filtered_df.empty:
-
-        # Access the 'Semantic values roberta' column
         semantic_values = filtered_df['Sentiment value lexicon'].tolist()
-
-        semantic = sum(semantic_values)/len(semantic_values)
+        semantic = sum(semantic_values) / len(semantic_values)
         
-        # Define a colormap ranging from red (negative) to white (neutral) to green (positive)
-        cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff0000', '#ffffff', '#00ff00'])
-  
-        # Map values to colors in the defined colormap
-        colors = mcolors.to_hex(cmap(semantic))
-        
-        return colors
+        if semantic < lower_threshold:
+            return '#ff0000'  # Red for values below lower threshold
+        elif semantic > upper_threshold:
+            return '#00ff00'  # Green for values above upper threshold
+        else:
+            return 'grey'  # Grey for values within the specified range
     else:
-        return 'grey'  # Default color if sentiment information is missing or edge not found
+        return 'grey' # Default color if sentiment information is missing or edge not found
 
      
 base_path = r"C:\Users\inest\OneDrive - Danmarks Tekniske Universitet\Semester I\Computational Tools for Data Science\data"
