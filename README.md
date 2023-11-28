@@ -12,7 +12,24 @@ There are 3 scraper files, reuters, cnn, and fox. Each is individual and needs t
 We will include a zip with all of the data scraped already
 
 # Topic Modeling LDA
+This Jupyter Notebook contains code for performing topic modeling using Latent Dirichlet Allocation (LDA) on a text dataset. The code utilizes the gensim library for LDA modeling and pyLDAvis for visualization.
+## Prerequisites
+Make sure you have the following Python packages installed:
+- gensim
+- pandas
+- nltk
+- pyLDAvis
 
+'''bash
+    pip install gensim pandas nltk pyLDAvis
+    '''
+
+
+## Results
+- **coherence_scores.csv**: CSV file containing coherence scores for different numbers of topics.
+- **document_topic_probabilities.csv**: CSV file containing document-topic probabilities for the selected LDA model.
+-**best_lda_visualization.html**: HTML file containing the visualization of the best LDA model.
+ 
 # Topic Modeling Vectorizer
 Prerequisites: in _src/data/output_ the scraped files need to be present.
 For Word2Vec, the Model _GoogleNews-vectors-negative300.bin_ needs to be present in _src/topic_modeling/vectorization_
