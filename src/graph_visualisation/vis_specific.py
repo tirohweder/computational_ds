@@ -60,7 +60,6 @@ G = nx.Graph()
 lower_threshold = -0.33
 upper_threshold = 0.33
 
-
 # Load your data
 combined_df = pd.read_csv(os.path.join(base_path,"combined_files.csv"))
 
@@ -115,8 +114,6 @@ edge_x = []
 edge_y = []
 #edge_widths = []
 edge_traces = []
-
-
 
 for edge in G.edges():
     if edge[0] in pos and edge[1] in pos:
