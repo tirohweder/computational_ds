@@ -29,6 +29,8 @@ Make sure you have the following Python packages installed:
 
 
 ## Results
+Running the LDA_15.ipynb will output the next files:
+
 - **coherence_scores.csv**: CSV file containing coherence scores for different numbers of topics.
 - **document_topic_probabilities.csv**: CSV file containing document-topic probabilities for the selected LDA model.
 - **best_lda_visualization.html**: HTML file containing the visualization of the best LDA model.
@@ -66,6 +68,10 @@ For this topic all changes were done in src/sentiment_analysis. The files create
 With this results, the most appropriate semantic function will be applied to "updated_dataframe_with_clusters_word2vec.csv" where the final results for each cluster will be calculated. 
 
 # Recommender System
+
+-Introduce path of master file with clusters (i.e updated_dataframe_with_clusters_word2vec.csv)
+-This file containts the scraped text of the articles
+-Output includes csv with recommended articles per cluster
 
 # Graph Visualisation
 For the visualisation to work, we need two additional files in _src/graph_visualisation_:
