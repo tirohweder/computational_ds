@@ -48,16 +48,17 @@ def edge_color(cluster_pair):
         return 'grey'  # Default color if sentiment information is missing or edge not found
 
      
-base_path = r"C:\Users\inest\OneDrive - Danmarks Tekniske Universitet\Semester I\Computational Tools for Data Science\data"
+base_path = r""
 
 # Load the distance matrix
-distance_df = pd.read_csv(os.path.join(base_path, "centroid_distance_matrix_word2vec_15.csv"), index_col=0)
+distance_df = pd.read_csv(os.path.join("centroid_distance_matrix_word2vec_15.csv"), index_col=0)
 
 # Create a network graph
 G = nx.Graph()
 
 # Load your data
-combined_df = pd.read_csv(os.path.join(base_path, "updated_dataframe_with_clusters_and_semantics.csv"))
+combined_df = pd.read_csv(os.path.join(
+    "../topic_modeling/vectorization/updated_dataframe_with_clusters_and_semantics.csv"))
 
 combined_df = combined_df[combined_df['Cluster'] != -1]
 
