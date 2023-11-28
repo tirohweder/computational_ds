@@ -9,12 +9,33 @@ Running the scraper will create a file in data/output called xxx_year_output.csv
 This is the file that contains the data that is used in the analysis and is based in the files from data/source.
 There are 3 scraper files, reuters, cnn, and fox. Each is individual and needs to be run for every file.
 
-
+We will include a zip with all of the data scraped already
 
 # Topic Modeling LDA
 
 # Topic Modeling Vectorizer
+Prerequisites: in _src/data/output_ the scraped files need to be present.
+For Word2Vec, the Model _GoogleNews-vectors-negative300.bin_ needs to be present in _src/topic_modeling/vectorization_
+As the computation of the vectorization and for tfidf takes a long time, find the precomputed files which can be loaded by the code inside of the attached zip file. Just place the files in _src/topic_modeling/vectorization_ 
 
+Word2Vec:
+word2vec_embeddings.npy - the complete data as word2vec embeddings
+umap_embeddings_word2vec.npy - the umap reduction of the word2vec embeddings
+hdbscan_cluster_labels_word2vec_15.npy - after hdbscan clustering
+
+
+Word2Vec Generated files:
+minimum_spanning_tree_visualization_word2vec_15.png - the minimum spanning tree of the hdbscan clusters
+centroid_distance_matrix_word2vec_15.csv - the distance matrix of the centroids of the hdbscan clusters
+updated_dataframe_with_clusters_word2vec_15.csv - the dataframe with the hdbscan clusters added as a column
+3d_plot_word2vec_15.html - the 3d plot of the hdbscan clusters
+
+TFIDF:
+The same but replaced word2vec with tfidf
+
+Changing the min_cluster_size can be done in this line: hdbscan.HDBSCAN(**min_cluster_size=15**,...)
+
+The evaluation of the clusters is done in the _evaluation_cluster_similarity.py_
 
 # Sentiment Analysis
 
@@ -22,6 +43,11 @@ There are 3 scraper files, reuters, cnn, and fox. Each is individual and needs t
 # Recommender System
 
 # Graph Visualisation
+For the visualisation to work, we need two additional files in _src/graph_visualisation_:
+_centroid_distance_matrix_word2vec_15.csv_ 
+_ines_add_this_please_ - please find this attached in the additional zip
+
+
 
 
 # Website Visualisation

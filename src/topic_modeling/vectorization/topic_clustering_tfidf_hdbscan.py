@@ -40,7 +40,7 @@ def tokenize_and_lemmatize(text):
 df = pd.DataFrame()
 path = os.path.join(directory_output, '*.csv')
 frames = []
-column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link", "Sentiment"]
+column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link"]
 for filename in glob.glob(path):
     df1 = pd.read_csv(filename, header=None, skiprows=1)
     frames.append(df1)
@@ -48,11 +48,11 @@ df = pd.concat(frames, ignore_index=True)
 df.columns = column_names
 
 # Generating or loading TFIDF embeddings
-tfidf_embeddings_file = "other/tfidf_embeddings.npz"
+tfidf_embeddings_file = "tfidf_embeddings.npz"
 if os.path.exists(tfidf_embeddings_file):
     X = load_npz(tfidf_embeddings_file)
 else:
-    vectorizer = TfidfVectorizer(max_features=5000, tokenizer=tokenize_and_lemmatize)
+    vectorizer = TfidfVectorizer(max_features=5000, tokenizer=tokenize_and_lemmatize, max_df=0.8)
     texts = df['Text'].tolist()
     X = vectorizer.fit_transform(texts)
     save_npz(tfidf_embeddings_file, X)
@@ -67,7 +67,7 @@ else:
     np.save(umap_embeddings_file, embedding)
 
 # Performing or loading HDBSCAN clustering
-hdbscan_labels_file = "hdbscan_cluster_labels.npy"
+hdbscan_labels_file = "hdbscan_cluster_labels_tfidf_15.npy"
 if os.path.exists(hdbscan_labels_file):
     cluster_labels = np.load(hdbscan_labels_file)
 else:
@@ -99,7 +99,7 @@ for cluster in unique_clusters:
 centroids = np.array(centroids)
 centroid_distances = euclidean_distances(centroids)
 distance_matrix_df = pd.DataFrame(centroid_distances, index=unique_clusters, columns=unique_clusters)
-distance_matrix_df.to_csv("centroid_distance_matrix.csv")
+distance_matrix_df.to_csv("centroid_distance_matrix_tfidf_15.csv")
 
 # Assigning cluster labels to the original dataframe
 df['Cluster'] = cluster_labels
@@ -109,8 +109,8 @@ df.to_csv('updated_dataframe_with_clusters_tfidf_15.csv', index=False)
 # Plotting 3D scatter plot using Plotly
 fig = px.scatter_3d(plot_data, x='UMAP_1', y='UMAP_2', z='UMAP_3', color='Cluster', hover_data=['Headline'], color_continuous_scale=px.colors.qualitative.Set1)
 fig.update_layout(
-    title='HDBSCAN + TFIDF with Noise Removal - Davies-Bouldin: 0.32418409691808064, Silhouette = 0.7323601',
+    title='HDBSCAN + TFIDF 15',
     scene=dict(xaxis_title='UMAP 1', yaxis_title='UMAP 2', zaxis_title='UMAP 3')
 )
-fig.write_html("3d_plot.html")
+fig.write_html("3d_plot_tfidf_15.html")
 fig.show()

@@ -27,7 +27,7 @@ directory_output = os.path.join(os.path.dirname(__file__), '../..', 'data', 'out
 df = pd.DataFrame()
 path = os.path.join('*.csv')
 frames = []
-column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link", "Sentiment"]
+column_names = ["ID", "Headline", "Date", "Text", "Organization", "Link"]
 
 # Reading and concatenating CSV files
 for filename in glob.glob(path):
@@ -64,7 +64,7 @@ else:
     np.save(umap_embeddings_file, embedding)
 
 # Loading or generating HDBSCAN cluster labels
-hdbscan_labels_file = "hdbscan_cluster_labels_word2vec.npy"
+hdbscan_labels_file = "hdbscan_cluster_labels_word2vec_15.npy"
 if os.path.exists(hdbscan_labels_file):
     cluster_labels = np.load(hdbscan_labels_file)
 else:
@@ -82,7 +82,7 @@ else:
     plt.title('Minimum Spanning Tree Visualization')
     plt.xlabel('Dimension 1')
     plt.ylabel('Dimension 2')
-    plt.savefig("minimum_spanning_tree_visualization.png")
+    plt.savefig("minimum_spanning_tree_visualization_word2vec_15.png")
     plt.close()
 
 # Preparing data for visualization and analysis
@@ -103,7 +103,7 @@ plot_data['Headline'] = filtered_headlines
 centroids = [np.mean(filtered_embedding[filtered_cluster_labels == cluster], axis=0) for cluster in np.unique(filtered_cluster_labels)]
 centroid_distances = euclidean_distances(centroids)
 distance_matrix_df = pd.DataFrame(centroid_distances, index=np.unique(filtered_cluster_labels), columns=np.unique(filtered_cluster_labels))
-distance_matrix_df.to_csv("centroid_distance_matrix_word2vec.csv")
+distance_matrix_df.to_csv("centroid_distance_matrix_word2vec_15.csv")
 
 # Assigning cluster labels to the original dataframe and saving
 df['Cluster'] = cluster_labels
