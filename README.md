@@ -69,6 +69,10 @@ With this results, the most appropriate semantic function will be applied to "up
 
 # Recommender System
 
+-Introduce path of master file with clusters (i.e updated_dataframe_with_clusters_word2vec.csv)
+-This file containts the scraped text of the articles
+-Output includes csv with recommended articles per cluster
+
 # Graph Visualisation
 For the visualisation to work, we need two additional files in _src/graph_visualisation_:
 _centroid_distance_matrix_word2vec_15.csv_ 
