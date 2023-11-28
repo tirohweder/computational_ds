@@ -24,12 +24,12 @@ Make sure you have the following Python packages installed:
 
     ```bash
     pip install gensim pandas nltk pyLDAvis
-        ```
+    ```
 
 ## Results
 - **coherence_scores.csv**: CSV file containing coherence scores for different numbers of topics.
 - **document_topic_probabilities.csv**: CSV file containing document-topic probabilities for the selected LDA model.
--**best_lda_visualization.html**: HTML file containing the visualization of the best LDA model.
+- **best_lda_visualization.html**: HTML file containing the visualization of the best LDA model.
  
 # Topic Modeling Vectorizer
 Prerequisites: in _src/data/output_ the scraped files need to be present.
