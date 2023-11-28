@@ -8,13 +8,14 @@ import matplotlib.colors as mcolors
 
 
 def count_articles(cluster_pair):
-    count = combined_df[(combined_df['Organization'] == cluster_pair[1][4:]) & (combined_df['Cluster'].apply(lambda x: str(cluster_pair[0]) in str(x)))].shape[0]
+    count = filtered_df[(filtered_df['Organization'] == cluster_pair[1][4:]) & (filtered_df['Cluster'].apply(lambda x: str(cluster_pair[0]) in str(x)))].shape[0]
     return count
 
 
 def edge_width(cluster_pair, max_count):
 
     count = count_articles(cluster_pair)
+
     # Define the range for widths
     min_width = 0.1
     max_width = 3
@@ -26,14 +27,14 @@ def edge_width(cluster_pair, max_count):
 
 def edge_color(cluster_pair):    
 
-    filtered_df = combined_df[
-        (combined_df['Organization'] == cluster_pair[1][4:]) & (combined_df['Cluster'].apply(lambda x: str(cluster_pair[0]) in str(x)))
+    filtered_df_1 = filtered_df[
+        (filtered_df['Organization'] == cluster_pair[1][4:]) & (filtered_df['Cluster'].apply(lambda x: str(cluster_pair[0]) in str(x)))
     ]
 
-    if not filtered_df.empty:
+    if not filtered_df_1.empty:
 
         # Access the 'Semantic values roberta' column
-        semantic_values = filtered_df['Sentiment value lexicon'].tolist()
+        semantic_values = filtered_df_1['Sentiment value lexicon'].tolist()
         semantic = sum(semantic_values) / len(semantic_values)
         
         # Adjusted colormap to map from red to white to green for values from -1 to 1
@@ -76,7 +77,7 @@ for cluster_id in combined_df['Cluster'].unique():
 filtered_df = filtered_df[filtered_df['Cluster'] != -1]
 
 # Count articles per cluster and normalize cluster sizes
-cluster_counts = combined_df['Cluster'].value_counts()
+cluster_counts = filtered_df['Cluster'].value_counts()
 scaler = MinMaxScaler(feature_range=(5, 15))  # Adjust range according to your preference
 normalized_sizes = scaler.fit_transform(cluster_counts.values.reshape(-1, 1)).flatten()
 
@@ -89,11 +90,11 @@ for cluster in distance_df.columns:
 
 # Add organization nodes and define positions
 org_positions = {'Org_CNN': (-15, 0), 'Org_FOX': (0, -10), 'Org_Reuters': (15, 0)}
-for org in combined_df['Organization'].unique():
+for org in filtered_df['Organization'].unique():
     G.add_node(f"Org_{org}", type='org', label=org)
 
     # Get the subset of the dataframe for the current organization
-    org_df = combined_df[combined_df['Organization'] == org]
+    org_df = filtered_df[filtered_df['Organization'] == org]
 
     # Iterate over the unique clusters for the current organization
     for cluster in org_df['Cluster'].unique():
