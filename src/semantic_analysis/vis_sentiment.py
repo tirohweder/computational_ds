@@ -13,7 +13,7 @@ def sentiment_count_graph(master_file_df):
     cnn_roberta_sentiments_counts = cnn_master['Semantic roberta twitter'].value_counts() / len(cnn_master)*100
  
     fox_master = master_file_df[master_file_df['Organization']=='FOX']
-    fox_roberta_sentiments_counts = fox_master['Semantic roberta twitter'].value_counts() / (len(fox_master)-fox_master['Semantic roberta twitter'].isna().sum())*100
+    fox_roberta_sentiments_counts = fox_master['Semantic roberta twitter'].value_counts() / (len(fox_master))*100
 
     reuters_master = master_file_df[master_file_df['Organization']=='Reuters']
     reuters_roberta_sentiments_counts = reuters_master['Semantic roberta twitter'].value_counts() / len(reuters_master)*100
