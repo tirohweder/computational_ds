@@ -15,7 +15,7 @@ def count_articles(cluster_pair):
 def edge_width(cluster_pair, max_count):
 
     count = count_articles(cluster_pair)
-    # Define the range for widths 
+    # Define the range for widths
     min_width = 0.1
     max_width = 5.0
 
@@ -34,31 +34,39 @@ def edge_color(cluster_pair):
 
         # Access the 'Semantic values roberta' column
         semantic_values = filtered_df['Sentiment value lexicon'].tolist()
-
-        semantic = sum(semantic_values)/len(semantic_values)
+        semantic = sum(semantic_values) / len(semantic_values)
         
-        # Define a colormap ranging from red (negative) to white (neutral) to green (positive)
+        # Adjusted colormap to map from red to white to green for values from -1 to 1
         cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff0000', '#ffff00', '#00ff00'])
-  
-        # Map values to colors in the defined colormap
-        colors = mcolors.to_hex(cmap(semantic))
+
+        # Normalize semantic value to the range [0, 1] to fit the colormap
+        normalized_semantic = (semantic + 1) / 2  # Scale to [0, 1] from [-1, 1]
+        
+        # Map normalized values to colors in the defined colormap
+        colors = mcolors.to_hex(cmap(normalized_semantic))
         
         return colors
-    else:
-        return 'grey'  # Default color if sentiment information is missing or edge not found
-
      
 base_path = r"C:\Users\inest\OneDrive - Danmarks Tekniske Universitet\Semester I\Computational Tools for Data Science\data"
+
 # Load the distance matrix
 distance_df = pd.read_csv(os.path.join(base_path, "centroid_distance_matrix_word2vec_15.csv"), index_col=0)
 
 # Create a network graph
 G = nx.Graph()
 
+#Set threshold for more specific visualizations
+
+lower_threshold = -0.5
+upper_threshold = 0.5
+
+
 # Load your data
 combined_df = pd.read_csv(os.path.join(base_path,"combined_files.csv"))
 
-combined_df = combined_df[combined_df['Cluster'] != -1]
+combined_df = combined_df[(combined_df['Cluster'] != -1) & 
+                          ((combined_df['Sentiment value lexicon'] <= lower_threshold)  |
+                          (combined_df['Sentiment value lexicon'] >= upper_threshold))]
 
 # Count articles per cluster and normalize cluster sizes
 cluster_counts = combined_df['Cluster'].value_counts()
@@ -86,6 +94,7 @@ for org in combined_df['Organization'].unique():
 
 degrees = dict(G.degree())
 max_count = max(degrees.values())
+
 
 # Use MDS to compute the positions
 mds = MDS(n_components=2, dissimilarity='precomputed', random_state=6)

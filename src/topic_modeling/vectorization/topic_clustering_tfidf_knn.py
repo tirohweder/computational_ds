@@ -12,6 +12,9 @@ from nltk.tokenize import word_tokenize
 import numpy as np
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 
+''' This script was used for testing feasibility of clustering using TFIDF and KNN. '''
+
+
 # Downloading NLTK data for tokenization and lemmatization
 nltk.download('punkt')
 nltk.download('wordnet')
@@ -72,7 +75,7 @@ fig = px.scatter_3d(
     hover_data=['Headline'], color_continuous_scale=px.colors.qualitative.Set1
 )
 fig.update_layout(
-    title='KNN + TFIDF with Outlier Removal 0.5204151351174, sil: 0.5733855',
+    title='KNN + TFIDF 15 - Davies= 0.5204151351174, Silhouette: 0.5733855',
     scene=dict(xaxis_title='UMAP 1', yaxis_title='UMAP 2', zaxis_title='UMAP 3')
 )
 fig.show()

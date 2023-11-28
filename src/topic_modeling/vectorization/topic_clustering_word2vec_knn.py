@@ -1,4 +1,3 @@
-import gensim
 from gensim.models import KeyedVectors
 import numpy as np
 import pandas as pd
@@ -8,7 +7,9 @@ from nltk.tokenize import word_tokenize
 import nltk
 from sklearn.cluster import KMeans
 from sklearn.metrics import davies_bouldin_score, silhouette_score
-import hdbscan
+
+''' This script was used for testing feasibility of clustering using word2vec and KNN. '''
+
 
 # Download NLTK's punkt tokenizer models for word tokenization
 nltk.download('punkt')
@@ -23,8 +24,8 @@ def average_word_vectors(text):
     return np.mean(vectors, axis=0) if len(vectors) > 0 else np.zeros(300)  # Averaging vectors
 
 # Load dataset
-df = pd.read_csv('/home/timm/Projects/computational_ds/data/output/cnn_2014_output.csv')
-df = df.head(10000)  # Limiting to first 10000 rows for processing
+df = pd.read_csv('cnn_2014_output.csv')
+#df = df.head(10000)  # Limiting to first 10000 rows for processing
 texts = df['Text'].tolist()
 
 # Generate vector representations for each text

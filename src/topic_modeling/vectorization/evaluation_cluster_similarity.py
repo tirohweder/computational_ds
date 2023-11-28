@@ -59,7 +59,9 @@ def plot_metrics_comparison(all_results):
 
 # Load the datasets
 file_paths = [
-    # File paths for various datasets
+    "updated_dataframe_with_clusters_word2vec_15.csv",
+    "updated_dataframe_with_clusters_word2vec_30.csv",
+    "updated_dataframe_with_clusters_word2vec_50.csv"
 ]
 # Reading the datasets into dataframes
 dfs = [pd.read_csv(file_path) for file_path in file_paths]

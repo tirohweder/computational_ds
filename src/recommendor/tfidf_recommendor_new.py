@@ -20,7 +20,7 @@ from scipy.linalg import svd
 
 #%%
 
-data = pd.read_csv(r'C:\Users\storr\OneDrive - Danmarks Tekniske Universitet\Year 1\Semester 1\Computational Tools for Data Science\Project\DATA\updated_dataframe_with_clusters_word2vec.csv')
+data = pd.read_csv(r'updated_dataframe_with_clusters_word2vec.csv')
 
 
 lemmatizer = WordNetLemmatizer()
@@ -141,7 +141,7 @@ for cluster in top_10_biggest_clusters:
     closest_articles_per_cluster_df['Cluster'] = cluster
     closest_articles_df = closest_articles_df.append(closest_articles_per_cluster_df).reset_index(drop=True)
 
-closest_articles_df.to_csv(r'C:\Users\storr\OneDrive - Danmarks Tekniske Universitet\Year 1\Semester 1\Computational Tools for Data Science\Project\DATA\recommender_for_biggest_clusters.csv', index=False)
+closest_articles_df.to_csv(r'recommender_for_biggest_clusters.csv', index=False)
 
 
 #%%
@@ -190,6 +190,7 @@ for cluster in top_10_biggest_clusters:
             
             article = recommended_articles_cluster.loc[i,j]
             
+            #some articles where found to have the information in the 'Organization' and 'Link' column interchange thus the or statement
             if org1 in recommended_articles_cluster['Organization'].iloc[article]  or org1 in recommended_articles_cluster['Link'].iloc[article]:
                 recommended_articles_clusters_df.at[i, 'recommended article from opposing org 1'] = article
                 org1_extracted = 1
