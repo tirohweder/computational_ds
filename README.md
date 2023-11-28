@@ -59,6 +59,9 @@ The evaluation of the clusters is done in the _evaluation_cluster_similarity.py_
 
 # Sentiment Analysis
 
+For this topic all changes were done in src/sentiment_analysis. The files created during scrapping were used to apply the functions created in sentiment_analyis.py. Running the results.ipynb will output separate files for the lexicon and roberta approach, xxx_year_semantics_lex.csv and xxx_year_semantics_rob.csv. To this files later on will be applied functions to normalize their results (weighted_trans_lex and weighted_trans_rob) and they will also be merged to create a sample following the sampling function for comparison which will output the file semantic_sampling.csv. In this results file a visualization of the previous comparison can also be done at the end.
+
+With this results, the most appropriate semantic function will be applied to the cluster file where the final results associated with each cluster will be associated. 
 
 # Recommender System
 
