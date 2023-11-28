@@ -29,6 +29,8 @@ Make sure you have the following Python packages installed:
 
 
 ## Results
+Running the LDA_15.ipynb will output the next files:
+
 - **coherence_scores.csv**: CSV file containing coherence scores for different numbers of topics.
 - **document_topic_probabilities.csv**: CSV file containing document-topic probabilities for the selected LDA model.
 - **best_lda_visualization.html**: HTML file containing the visualization of the best LDA model.
