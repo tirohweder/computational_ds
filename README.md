@@ -61,7 +61,7 @@ The evaluation of the clusters is done in the _evaluation_cluster_similarity.py_
 
 # Sentiment Analysis
 
-Prerequisites: in src/data/output the scraped files need to be present. To run the code you need to load the CSV file "updated_dataframe_with_clusters_word2vec.csv" or the scraped files located in _src/data/output_
+Prerequisites: in src/data/output the scraped files need to be present. To run the code you need to load the CSV file "updated_dataframe_with_clusters_word2vec.csv", the scraped files located in _src/data/output_, and the sentiment_chatgpt.csv file in the extra zip
 
 For this topic all changes were done in src/sentiment_analysis. The files created during scrapping were used to apply the functions created in sentiment_analyis.py. Running the results.ipynb will output separate files for the lexicon and roberta approach, xxx_year_semantics_lex.csv and xxx_year_semantics_rob.csv. To this files later on will be applied functions to normalize their results (weighted_trans_lex and weighted_trans_rob) and they will also be merged to create a sample following the sampling function for comparison which will output the file semantic_sampling.csv. In this results file a visualization of the previous comparison can also be done at the end.
 
@@ -71,14 +71,12 @@ With this results, the most appropriate semantic function will be applied to "up
 
 -Introduce path of master file with clusters (i.e updated_dataframe_with_clusters_word2vec.csv)
 -This file containts the scraped text of the articles
--Output includes csv with recommended articles per cluster
+-Output includes csv with recommended articles per cluster
 
 # Graph Visualisation
 For the visualisation to work, we need two additional files in _src/graph_visualisation_:
 _centroid_distance_matrix_word2vec_15.csv_ 
-_ines_add_this_please_ - please find this attached in the additional zip
-
-
+_combined_files.csv_ - please find this attached in the additional zip
 
 
 # Website Visualisation

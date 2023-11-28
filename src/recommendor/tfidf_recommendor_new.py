@@ -190,7 +190,7 @@ for cluster in top_10_biggest_clusters:
             
             article = recommended_articles_cluster.loc[i,j]
             
-            #some articles where found to have the information in the 'Organization' and 'Link' column interchange thus the or statement
+            #some articles where found to have the information in the 'Organization' and 'Link' column interchanged thus the 'or' statement
             if org1 in recommended_articles_cluster['Organization'].iloc[article]  or org1 in recommended_articles_cluster['Link'].iloc[article]:
                 recommended_articles_clusters_df.at[i, 'recommended article from opposing org 1'] = article
                 org1_extracted = 1

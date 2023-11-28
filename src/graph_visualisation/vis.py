@@ -17,7 +17,7 @@ def edge_width(cluster_pair, max_count):
     count = count_articles(cluster_pair)
     # Define the range for widths 
     min_width = 0.1
-    max_width = 5.0
+    max_width = 1
 
     # Linear interpolation to scale the width between min and max based on count
     scaled_width = min_width + (max_width - min_width) * (count / max_count)
@@ -38,7 +38,7 @@ def edge_color(cluster_pair):
         semantic = sum(semantic_values)/len(semantic_values)
         
         # Define a colormap ranging from red (negative) to white (neutral) to green (positive)
-        cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff0000', '#ffff00', '#00ff00'])
+        cmap = mcolors.LinearSegmentedColormap.from_list('sentiment_gradient', ['#ff000080', '#ffff00', '#00ff00'])
   
         # Map values to colors in the defined colormap
         colors = mcolors.to_hex(cmap(semantic))
