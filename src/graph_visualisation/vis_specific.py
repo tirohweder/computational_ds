@@ -57,16 +57,24 @@ G = nx.Graph()
 
 #Set threshold for more specific visualizations
 
-lower_threshold = -0.5
-upper_threshold = 0.5
+lower_threshold = -0.33
+upper_threshold = 0.33
 
 
 # Load your data
 combined_df = pd.read_csv(os.path.join(base_path,"combined_files.csv"))
 
-combined_df = combined_df[(combined_df['Cluster'] != -1) & 
-                          ((combined_df['Sentiment value lexicon'] <= lower_threshold)  |
-                          (combined_df['Sentiment value lexicon'] >= upper_threshold))]
+filtered_df = pd.DataFrame()
+
+for cluster_id in combined_df['Cluster'].unique():
+    cluster_subset = combined_df[combined_df['Cluster'] == cluster_id]
+    cluster_subset_filtered = cluster_subset[
+        (cluster_subset['Sentiment value lexicon'] <= lower_threshold) |
+        (cluster_subset['Sentiment value lexicon'] >= upper_threshold)
+    ]
+    filtered_df = pd.concat([filtered_df, cluster_subset_filtered])
+
+filtered_df = filtered_df[filtered_df['Cluster'] != -1]
 
 # Count articles per cluster and normalize cluster sizes
 cluster_counts = combined_df['Cluster'].value_counts()
